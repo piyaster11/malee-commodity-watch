@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Commodity &amp; Price Watch — Malee Group (mock-up)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f1e8;
+      --ink: #1b241c;
+      --muted: #5a635a;
+      --card: #fffdf8;
+      --line: #e0d8c8;
+      --green: #1b6b48;
+      --green-soft: #e7f4ec;
+      --amber: #8a5a10;
+      --amber-soft: #f7eed6;
+      --red: #9a2e2e;
+      --red-soft: #f8e7e7;
+      --blue: #245e7a;
+      --blue-soft: #e7f1f6;
+      --chip: #efe8d8;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Libre Franklin", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    header.app {
+      background: #163524;
+      color: #f6f3eb;
+      padding: 28px 20px 22px;
+    }
+    header.app .wrap, main, footer { max-width: 1180px; margin: 0 auto; }
+    header.app h1 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(28px, 4vw, 40px);
+      margin: 8px 0 8px;
+      letter-spacing: -0.02em;
+    }
+    header.app p { margin: 0 0 8px; color: #d7e3d9; max-width: 72ch; }
+    .kicker { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #b7cfc0; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 999px;
+      vertical-align: middle;
+    }
+    .badge.mock { background: #f0d48a; color: #4a3500; }
+    .badge.real { background: var(--green-soft); color: var(--green); }
+    .badge.sample { background: #f3d27a; color: #4a3500; }
+    .badge.prelim { background: var(--blue-soft); color: var(--blue); }
+    main { padding: 24px 20px 64px; }
+    h2 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-weight: 600;
+      font-size: 26px;
+      margin: 0 0 8px;
+    }
+    h3 { font-size: 15px; margin: 0 0 6px; font-weight: 650; }
+    section.block { margin: 28px 0 36px; }
+    .lead { color: var(--muted); margin: 0 0 16px; max-width: 80ch; }
+    .how { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0 8px; }
+    .how article, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 16px 14px;
+    }
+    .how strong { display: block; margin-bottom: 4px; }
+    .nav {
+      display: flex; flex-wrap: wrap; gap: 8px 14px;
+      margin: 16px 0 0; font-size: 14px;
+    }
+    .nav a { color: #cfe3d5; }
+    .margin-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .big {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: clamp(32px, 5vw, 44px);
+      font-weight: 600;
+      line-height: 1.05;
+      margin: 4px 0;
+    }
+    .unit { font-size: 14px; color: var(--muted); font-weight: 500; }
+    .src, .src a { font-size: 12px; color: var(--muted); }
+    .src a { text-decoration: underline; text-underline-offset: 2px; color: var(--blue); }
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .tile { position: relative; overflow: hidden; }
+    .tile .chg { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 13px; margin: 8px 0; }
+    .up { color: var(--red); }
+    .down { color: var(--green); }
+    .flat { color: var(--muted); }
+    /* For FX and costs: up (dearer inputs) is bad = red; down is good = green. Already using .up/.down that way. */
+    .status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 4px 8px; border-radius: 999px;
+    }
+    .status.green { background: var(--green-soft); color: var(--green); }
+    .status.amber { background: var(--amber-soft); color: var(--amber); }
+    .status.red { background: var(--red-soft); color: var(--red); }
+    .status.watch { background: var(--blue-soft); color: var(--blue); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .alerts { display: flex; flex-direction: column; gap: 10px; }
+    .alert {
+      display: grid; grid-template-columns: 88px 1fr;
+      gap: 12px; align-items: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 14px 16px;
+    }
+    .alert.red { border-left: 5px solid var(--red); }
+    .alert.amber { border-left: 5px solid var(--amber); }
+    .alert.green { border-left: 5px solid var(--green); }
+    .alert.watch { border-left: 5px solid var(--blue); }
+    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } .alert { grid-template-columns: 1fr; } }
+    .chart-card canvas { width: 100% !important; height: 260px !important; }
+    .note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--card); }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+    .slider-row { display: grid; grid-template-columns: 200px 1fr 70px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+    input[type=range] { width: 100%; }
+    .gpm-box { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+    .gpm-box .card { min-width: 180px; flex: 1; }
+    .band { height: 14px; border-radius: 99px; background: linear-gradient(to right, #f3d0d0 0 40%, #f7eed6 40% 70%, #d7eedf 70% 100%); position: relative; margin: 14px 0 6px; }
+    .band .mark { position: absolute; top: -5px; width: 4px; height: 24px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); }
+    .band .tgt { position: absolute; top: -8px; height: 30px; background: transparent; border-left: 1px dashed var(--green); border-right: 1px dashed var(--green); }
+    footer { padding: 24px 20px 48px; color: var(--muted); font-size: 13px; }
+    .sample-banner {
+      background: #fff4cc; border: 1px solid #e6c96a; color: #4a3500;
+      border-radius: 12px; padding: 12px 14px; margin: 16px 0; font-size: 14px;
+    }
+    ul.plain { margin: 8px 0 0; padding-left: 18px; }
+    ul.plain li { margin: 0 0 6px; }
+  </style>
+</head>
+<body>
+  <header class="app">
+    <div class="wrap">
+      <div class="kicker">Malee Group PCL (MALEE.BK) · Head of AI desk · Public data only</div>
+      <h1>Commodity &amp; Price Watch</h1>
+      <p>A simple picture of the input costs that can move gross margin — sugar, packaging metal, coconut, pineapple and the baht — plus a 3–6 month look-ahead and the El Niño backdrop.</p>
+      <p><span class="badge mock">Mock-up</span> &nbsp; Compiled 17 November 2026 (Asia/Bangkok). Every real figure has a source link and an as-of date. Sample or estimated figures are marked <span class="badge sample">Sample</span>.</p>
+      <nav class="nav">
+        <a href="#read">How to read this</a>
+        <a href="#margin">Margin target</a>
+        <a href="#prices">Current prices</a>
+        <a href="#alerts">Alerts</a>
+        <a href="#trends">Trends</a>
+        <a href="#forecast">Forecast</a>
+        <a href="#enso">El Niño</a>
+        <a href="#sensitivity">Margin what-if</a>
+        <a href="#sources">Sources</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="block" id="read">
+      <h2>How to read this page</h2>
+      <div class="how">
+        <article><strong>1. Look at the big number first</strong>Each tile shows the latest public price, its unit, and the date of that price.</article>
+        <article><strong>2. Then look at the colour</strong>Green means the recent move is easier on margin (cheaper inputs). Amber means watch. Red means a cost rise that may pressure the 17–19% gross-margin target.</article>
+        <article><strong>3. Colours use simple, adjustable rules</strong>The default rules are shown under Alerts. They are a starting point, not Malee policy. You can change them in the what-if section.</article>
+        <article><strong>4. This is a mock-up</strong>Cost-mix weights are examples only. They are not Malee’s actual bill of materials. Forecast bands that are not from a public futures curve are labelled as a sample method.</article>
+      </div>
+    </section>
+
+    <section class="block" id="margin">
+      <h2>Where gross margin stands</h2>
+      <p class="lead">Malee’s 3Q26 MD&amp;A, published 11 November 2026, revised the 2026 gross-profit-margin target to 17–19%, down from the earlier 18–20% guidance. Nine-month actual margin is 17.4%, inside the new band but below the old one. Third-quarter margin was 16.8%.</p>
+      <div class="margin-row">
+        <div class="card">
+          <div class="kicker">9M 2026 actual</div>
+          <div class="big">17.4%</div>
+          <div class="unit">Gross profit margin</div>
+          <p class="src"><a href="https://www.maleegroup.com/wp-content/uploads/2026/11/3Q26-MDA_EN_Final.pdf" target="_blank" rel="noopener">Malee 3Q26 MD&amp;A (PDF)</a> · as of 30 Sep 2026, published 11 Nov 2026</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Q3 2026 actual</div>
+          <div class="big">16.8%</div>
+          <div class="unit">Up from 16.4% in Q3 2025</div>
+          <p class="src"><a href="https://www.maleegroup.com/wp-content/uploads/2026/11/3Q26-MDA_EN_Final.pdf" target="_blank" rel="noopener">Malee 3Q26 MD&amp;A (PDF)</a> · quarter ended 30 Sep 2026</p>
+        </div>
+        <div class="card">
+          <div class="kicker">2026 target (revised)</div>
+          <div class="big">17–19%</div>
+          <div class="unit">Previously 18–20%</div>
+          <p class="src"><a href="https://www.maleegroup.com/wp-content/uploads/2026/11/3Q26-MDA_EN_Final.pdf" target="_blank" rel="noopener">Malee 3Q26 MD&amp;A, Performance targets</a> · published 11 Nov 2026</p>
+        </div>
+      </div>
+      <p class="note">The MD&amp;A says the revision reflects top-line performance and production-cost impacts from external factors, including higher costs for certain raw materials and packaging and elevated energy costs linked to instability in the Middle East.</p>
+    </section>
+
+    <section class="block" id="prices">
+      <h2>Current prices</h2>
+      <p class="lead">One tile per input. “1M / 3M / 12M” means the change versus the same measure one month, three months and twelve months earlier. A rise in an input price is shown in red because it can squeeze margin. A fall is shown in green.</p>
+      <div class="tiles" id="tiles"></div>
+      <p class="note">Official Thai farm-gate prices are monthly; October 2026 is the latest complete month in the OAE series (retrieved 17 Nov 2026). ICE sugar, LME aluminium and the Bank of Thailand baht rate are daily, through 16 Nov 2026. World Bank monthly series run through October 2026 (Pink Sheet dated 3 Nov 2026).</p>
+    </section>
+
+    <section class="block" id="alerts">
+      <h2>Alerts</h2>
+      <p class="lead">Default rules (you can treat these as a starting point): <strong>Red</strong> if the 1-month change is +10% or more, or the 12-month change is +15% or more. <strong>Amber</strong> if the 3-month change is +8% or more, or the price has bounced sharply from a much lower year-ago level. <strong>Green</strong> otherwise. El Niño is added as a watch item, not a price trigger.</p>
+      <div class="alerts" id="alerts-list"></div>
+    </section>
+
+    <section class="block" id="trends">
+      <h2>How prices have moved</h2>
+      <p class="lead">Each chart uses one official public series. Hover or glance at the last point — that is the latest complete observation, also shown on the tiles.</p>
+      <div class="charts">
+        <div class="card chart-card">
+          <h3>World raw sugar (World Bank monthly)</h3>
+          <canvas id="chartSugar"></canvas>
+          <p class="src"><a href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx" target="_blank" rel="noopener">World Bank Pink Sheet, monthly prices</a> · updated 3 Nov 2026 · through Oct 2026 · USD/kg, ISA world raw sugar</p>
+        </div>
+        <div class="card chart-card">
+          <h3>Aluminium, LME cash (monthly average)</h3>
+          <canvas id="chartAl"></canvas>
+          <p class="src"><a href="https://www.westmetall.com/en/markdaten.php?action=table&amp;field=LME_Al_cash" target="_blank" rel="noopener">Westmetall, LME Aluminium cash settlement</a> · daily official settlements, averaged by month · latest daily 16 Nov 2026 is on the tile</p>
+        </div>
+        <div class="card chart-card">
+          <h3>Thai large mature coconut, farm-gate</h3>
+          <canvas id="chartCoco"></canvas>
+          <p class="src"><a href="https://catalog.oae.go.th/dataset/monthly_prices_coconut" target="_blank" rel="noopener">OAE / NABC agriapi, large mature coconut (มะพร้าวแห้ง ใหญ่)</a> · official unit baht/100 nuts, shown as baht/nut · through Oct 2026 · retrieved 17 Nov 2026. This is not aromatic nam-hom coconut.</p>
+        </div>
+        <div class="card chart-card">
+          <h3>Thai factory pineapple, farm-gate</h3>
+          <canvas id="chartPine"></canvas>
+          <p class="src"><a href="https://catalog.oae.go.th/dataset/monthly_prices_pineapples" target="_blank" rel="noopener">OAE / NABC agriapi, factory pineapple (สับปะรดโรงงาน)</a> · baht/kg · through Oct 2026 · retrieved 17 Nov 2026</p>
+        </div>
+        <div class="card chart-card">
+          <h3>Coconut oil, international (World Bank)</h3>
+          <canvas id="chartOil"></canvas>
+          <p class="src"><a href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx" target="_blank" rel="noopener">World Bank Pink Sheet, coconut oil</a> · USD/metric tonne · through Oct 2026 · an international proxy, not a Thai farm-gate price</p>
+        </div>
+        <div class="card chart-card">
+          <h3>Thai baht per US dollar — latest official week</h3>
+          <canvas id="chartFx"></canvas>
+          <p class="src"><a href="https://app.bot.or.th/BTWS_STAT/statistics/BOTWEBSTAT.aspx?language=ENG&amp;reportID=123" target="_blank" rel="noopener">Bank of Thailand, USD reference rate</a> · 9–16 Nov 2026 only. 1-month, 3-month and 12-month official history was not retrieved for this mock-up, so those changes are not shown.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="forecast">
+      <h2>A 3–6 month look-ahead</h2>
+      <p class="lead">Where a public market already prices the future, we show that curve and label it as market data — not “our forecast”. Where no futures market exists, any path is a <span class="badge sample">Sample method</span> and should not be used to buy or sell.</p>
+      <div class="charts">
+        <div class="card chart-card">
+          <h3>World raw sugar — ICE futures curve</h3>
+          <canvas id="chartSugarFwd"></canvas>
+          <p class="src"><a href="https://www.czapp.com/analyst-insights/daily-market-price-updates-and-commentary-16th-november-2026/" target="_blank" rel="noopener">ICE Sugar No.11 settlements, 16 Nov 2026, via CZ app</a>. Front-month close 18.16 ¢/lb is from <a href="https://markets.ptc.ft.markitdigital.com/data/commodities/tearsheet/historical?c=Sugar+%2311" target="_blank" rel="noopener">FT.com, 16 Nov 2026</a>. The shaded band is a <span class="badge sample">sample</span> ±5% range around the curve, for illustration only.</p>
+        </div>
+        <div class="card chart-card">
+          <h3>Aluminium — cash vs official 3-month</h3>
+          <canvas id="chartAlFwd"></canvas>
+          <p class="src"><a href="https://www.westmetall.com/en/markdaten.php?action=table&amp;field=LME_Al_cash" target="_blank" rel="noopener">LME official cash $3,332 and 3-month $3,020 per tonne, 16 Nov 2026, via Westmetall</a>. The market is pricing aluminium lower three months out than today’s cash price (backwardation). That is the exchange contract, not our forecast. World Bank October 2026 outlook (data cutoff 14 Oct 2026) forecasts an annual average of $3,250/t in 2026 and $3,100/t in 2027 — <a href="https://thedocs.worldbank.org/en/doc/2ac43f46629cf90c2ea5b8929a343593-0050012026/related/CMO-October-2026-Forecasts.pdf" target="_blank" rel="noopener">CMO forecasts PDF</a>.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>What we are not forecasting</h3>
+        <ul class="plain">
+          <li><strong>Thai coconut and pineapple farm-gate prices</strong> have no public futures market. A simple trend or seasonal path would be a sample method only, so it is not drawn as a prediction here. The El Niño section below explains the historical pattern to watch, especially for coconut into 2027.</li>
+          <li><strong>Thai white sugar</strong> is an administered domestic price (last published 21 baht/kg white and 22 baht/kg refined, effective 8 November 2025 for crop year 2568/69). It does not follow the ICE curve unless the Office of the Cane and Sugar Board issues a new notice. Confirm whether this is still in force for 2569/70.</li>
+          <li><strong>THB/USD</strong>: no official 3–6 month BOT forecast is shown. A weaker baht (more baht per dollar) makes imported inputs dearer in baht terms.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="enso">
+      <h2>El Niño watch — why it matters for Malee’s crops</h2>
+      <p class="lead">A very strong El Niño is under way in the tropical Pacific. In plain language: the eastern Pacific is much warmer than usual, which often raises the chance of drier-than-normal weather in parts of Thailand. That can cut yields of rain-fed sugarcane, coconut and pineapple, and can lift farm prices later. It is a tendency, not a guarantee.</p>
+      <div class="margin-row">
+        <div class="card">
+          <div class="kicker">NOAA CPC status</div>
+          <div class="big" style="font-size:28px">El Niño Advisory</div>
+          <div class="unit">Issued 12 November 2026</div>
+          <p>A strong-to-very strong El Niño is likely through January–March 2027 (greater than a 79% chance). The event is expected to persist through March–May 2027, with neutral conditions favoured from April–June 2027. Chance of a historic event (3-month RONI of +2.5°C or more) is about 60% for October–December and November–January. Next discussion: 10 December 2026.</p>
+          <p class="src"><a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.html" target="_blank" rel="noopener">NOAA CPC ENSO Diagnostic Discussion, 12 Nov 2026</a></p>
+        </div>
+        <div class="card">
+          <div class="kicker">Latest ONI (observed)</div>
+          <div class="big">+2.46°C</div>
+          <div class="unit">August–October 2026 (ASO)</div>
+          <p>The Oceanic Niño Index is the 3-month average temperature anomaly in the Niño 3.4 region. Values at or above +0.5°C for five overlapping seasons are El Niño. +2.0°C or more is commonly called very strong. SON 2026 has not been published yet.</p>
+          <p class="src"><a href="https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt" target="_blank" rel="noopener">NOAA CPC ONI v5 ascii</a> · retrieved 17 Nov 2026 · through ASO 2026</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Australia BoM (same event)</div>
+          <div class="big" style="font-size:28px">Strong to very strong</div>
+          <div class="unit">Weekly relative Niño 3.4: +2.75°C</div>
+          <p>For the week ending 8 November 2026, slightly off a peak of +2.88°C. BoM says all models, including its own, point to a peak in November or December and to the event staying above El Niño thresholds into autumn 2027. A strong signal does not automatically mean strong local impacts.</p>
+          <p class="src"><a href="https://www.bom.gov.au/climate/enso/" target="_blank" rel="noopener">Bureau of Meteorology ENSO wrap</a> · retrieved 17 Nov 2026</p>
+        </div>
+      </div>
+      <div class="card chart-card" style="margin-top:14px">
+        <h3>Oceanic Niño Index, 2015 to August–October 2026</h3>
+        <canvas id="chartOni" style="height:300px"></canvas>
+        <p class="src"><a href="https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt" target="_blank" rel="noopener">NOAA CPC ONI v5</a> · dashed lines are the ±0.5°C El Niño / La Niña thresholds · annotations mark the 2015–16 peak, the 2023–24 peak, and ASO 2026. Retrieved 17 Nov 2026.</p>
+      </div>
+      <h3 style="margin-top:22px">What this usually means for Thai crops — and what to watch now</h3>
+      <table>
+        <thead>
+          <tr><th>Crop</th><th>Typical weather link</th><th>What the record shows, and what to watch</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sugarcane</strong></td>
+            <td>El Niño often raises the chance of below-normal rain and heat in rain-fed areas, especially the Northeast (about 44% of cane area). Drought during the growing season can cut cane yield and the amount of sugar extracted from each tonne.</td>
+            <td>The Thai Meteorological Department’s 3-month outlook for October–December 2026 (issued 25 Sep 2026) expected rainfall below normal in most of the country, and about 60% below normal in the Northeast. USDA FAS, citing TMD rainfall for 1 Jan–30 Sep 2026, forecasts 2026/27 cane at 95 million tonnes, down 10% from 105.9 million, and sugar at 9.5 million tonnes, down 21%, partly on El Niño. World raw sugar has eased in the past month, but Thai crop risk is still a watch item for 2027 supply. <span class="src"><a href="https://tmd.go.th/media/climate/climate-monthly/2569_%E0%B8%A0%E0%B8%8A_%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%99%E0%B8%9A-1_%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%84%E0%B8%B2%E0%B8%94%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%81%E0%B8%A9%E0%B8%93%E0%B8%B0%E0%B8%AD%E0%B8%B2%E0%B8%81%E0%B8%B2%E0%B8%A8%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%A3%E0%B8%B2%E0%B8%A2-3-%E0%B9%80%E0%B8%94%E0%B8%AD%E0%B8%99-%E0%B8%95%E0%B8%A5%E0%B8%B2%E0%B8%84%E0%B8%A1-%E0%B8%96%E0%B8%87-%E0%B8%98%E0%B8%99%E0%B8%A7%E0%B8%B2%E0%B8%84%E0%B8%A1-2569.pdf" target="_blank" rel="noopener">TMD Oct–Dec 2026 outlook (PDF)</a> · <a href="https://www.tmd.go.th/climate/El-Nino-La-Nina" target="_blank" rel="noopener">TMD ENSO desk</a> · <a href="https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Sugar+Semi-annual_Bangkok_Thailand_TH2026-0038" target="_blank" rel="noopener">USDA FAS Sugar Semi-annual TH2026-0038</a></span></td>
+          </tr>
+          <tr>
+            <td><strong>Coconut</strong></td>
+            <td>Coconut palms are long-lived. Drought and heat can reduce nut set, with the effect on harvests and farm prices often showing up many months later — not in the same month as the peak ocean temperature.</td>
+            <td>After the very strong 2015–16 El Niño, the official OAE farm-gate price for large mature coconut peaked at ฿18.82/nut in February 2017. After the 2023–24 El Niño, it peaked at ฿22.36/nut in December 2024. The official October 2026 price is ฿8.27/nut — still far below a year ago (−53.9%), though it has bounced from the August low of ฿6.02. If that 12–18 month lag were to repeat, 2027 is the year to watch. This is a historical pattern from official prices, not a forecast. There is no official national monthly series for aromatic nam-hom coconut. <span class="src"><a href="https://catalog.oae.go.th/dataset/monthly_prices_coconut" target="_blank" rel="noopener">OAE coconut farm-gate prices</a> · <a href="https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt" target="_blank" rel="noopener">NOAA ONI</a></span></td>
+          </tr>
+          <tr>
+            <td><strong>Pineapple and other fruit</strong></td>
+            <td>Pineapple is relatively shallow-rooted and can suffer in a hot, dry spell, especially if young plants wilt. Lower harvests have in past dry episodes been followed by firmer farm-gate and factory prices.</td>
+            <td>Trade commentary on the 2023 El Niño described stunted Thai winter pineapple and a tighter 2023 crop. Official OAE factory-pineapple prices today are ฿9.71/kg in October 2026, up 11.5% over three months and 4.2% versus a year ago — already an amber watch, and worth tracking if TMD’s drier outlook holds. <span class="src"><a href="https://catalog.oae.go.th/dataset/monthly_prices_pineapples" target="_blank" rel="noopener">OAE pineapple farm-gate prices</a> · <a href="https://www.czapp.com/analyst-insights/thai-pineapple-el-ninos-impact-on-2023-production/" target="_blank" rel="noopener">CZ, Thai pineapple and the 2023 El Niño</a> (trade report, not an official statistic)</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">A Thai bank research note (Krungthai COMPASS, reported by The Nation) has estimated large farm-income losses in a severe 2026–27 El Niño drought scenario, with sugarcane among the affected crops. That is a private scenario, not a government forecast. <a href="https://www.nationthailand.com/news/general/40068423" target="_blank" rel="noopener">The Nation, 2026</a>. La Niña, when it occurs, more often raises the chance of heavier rain and flood damage in parts of Thailand — the opposite weather risk, and not the current official status.</p>
+    </section>
+
+    <section class="block" id="sensitivity">
+      <h2>What a cost move could mean for gross margin</h2>
+      <div class="sample-banner"><strong>Sample weights — not Malee’s actual cost mix.</strong> Move the sliders to try different shares of cost of sales. The starting margin is the public 9M 2026 figure of 17.4%. The method is simple: if an item is W% of cost of sales, and its price rises by P%, gross margin falls by about W% × P% × 82.6% (because cost of sales was 82.6% of sales at a 17.4% margin). This is an illustration, not a forecast of Malee’s reported GPM.</div>
+      <div class="card">
+        <label for="period"><strong>Compare latest prices with:</strong></label>
+        <select id="period" style="margin-left:8px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);">
+          <option value="m1">1 month earlier</option>
+          <option value="m3" selected>3 months earlier</option>
+          <option value="m12">12 months earlier</option>
+        </select>
+        <div id="sliders"></div>
+        <div class="gpm-box">
+          <div class="card">
+            <div class="kicker">Starting GPM (9M 2026)</div>
+            <div class="big" style="font-size:32px">17.4%</div>
+          </div>
+          <div class="card">
+            <div class="kicker">Illustrated GPM after these cost moves</div>
+            <div class="big" style="font-size:32px" id="gpmOut">—</div>
+            <div class="unit" id="gpmDelta"></div>
+          </div>
+          <div class="card">
+            <div class="kicker">Versus 17–19% target</div>
+            <div class="unit" id="gpmBand"></div>
+            <div class="band" id="band"><span class="tgt" style="left:40%;width:30%"></span><span class="mark" id="bandMark"></span></div>
+            <div class="note">Scale: 15% at left, 20% at right. The dashed window is the 17–19% target.</div>
+          </div>
+        </div>
+        <p class="note" id="gpmCaveat"></p>
+      </div>
+    </section>
+
+    <section class="block" id="sources">
+      <h2>Data sources and notes</h2>
+      <p class="lead">Retrieved or opened on 17 November 2026 (Asia/Bangkok), unless a source date is given below.</p>
+      <table>
+        <thead>
+          <tr><th>Series</th><th>What you are seeing</th><th>As-of date</th><th>Source</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Malee GPM and 17–19% target</td><td>Public MD&amp;A figures only. No internal Malee cost data.</td><td>Period to 30 Sep 2026; published 11 Nov 2026</td><td><a href="https://www.maleegroup.com/wp-content/uploads/2026/11/3Q26-MDA_EN_Final.pdf" target="_blank" rel="noopener">Malee 3Q26 MD&amp;A (English PDF)</a></td></tr>
+          <tr><td>ICE Sugar No.11</td><td>Front-month close, US cents/lb</td><td>16 Nov 2026 (1M comparison: 16 Oct 2026 close 20.85)</td><td><a href="https://markets.ptc.ft.markitdigital.com/data/commodities/tearsheet/historical?c=Sugar+%2311" target="_blank" rel="noopener">FT.com historical</a></td></tr>
+          <tr><td>ICE sugar curve</td><td>March, May, July, October 2027 settlements</td><td>16 Nov 2026</td><td><a href="https://www.czapp.com/analyst-insights/daily-market-price-updates-and-commentary-16th-november-2026/" target="_blank" rel="noopener">CZ app daily settlements</a></td></tr>
+          <tr><td>World sugar, coconut oil, aluminium (monthly)</td><td>World Bank Pink Sheet, nominal USD</td><td>Through Oct 2026; workbook updated 3 Nov 2026</td><td><a href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx" target="_blank" rel="noopener">Monthly historical XLSX</a> · <a href="https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Pink-Sheet-November-2026.pdf" target="_blank" rel="noopener">November 2026 Pink Sheet PDF</a></td></tr>
+          <tr><td>World Bank 2026–27 price forecasts</td><td>Annual averages, not a 3–6 month path</td><td>Outlook dated 27–28 Oct 2026; data cutoff 14 Oct 2026</td><td><a href="https://thedocs.worldbank.org/en/doc/2ac43f46629cf90c2ea5b8929a343593-0050012026/related/CMO-October-2026-Forecasts.pdf" target="_blank" rel="noopener">CMO October 2026 forecasts PDF</a></td></tr>
+          <tr><td>LME aluminium cash and 3-month</td><td>Official daily settlements, USD/tonne</td><td>Latest 16 Nov 2026; 1M/3M/12M use 16 Oct 2026, 17 Aug 2026, 17 Nov 2025</td><td><a href="https://www.westmetall.com/en/markdaten.php?action=table&amp;field=LME_Al_cash" target="_blank" rel="noopener">Westmetall LME table</a></td></tr>
+          <tr><td>Thai large mature coconut</td><td>OAE farm-gate, baht/100 nuts, shown as baht/nut. Not aromatic nam-hom.</td><td>October 2026 monthly (827.23 baht/100 nuts). Nov week-1 sheet of 984 is a preliminary weekly average only.</td><td><a href="https://catalog.oae.go.th/dataset/monthly_prices_coconut" target="_blank" rel="noopener">OAE catalog</a> · <a href="https://oae.go.th/uploads/files/2026/11/06/1aa381ca70cc0eef.pdf" target="_blank" rel="noopener">OAE Nov 2026 week-1 PDF</a></td></tr>
+          <tr><td>Thai factory pineapple</td><td>OAE farm-gate, baht/kg</td><td>October 2026 monthly (9.71). Nov week-1 9.74 is preliminary.</td><td><a href="https://catalog.oae.go.th/dataset/monthly_prices_pineapples" target="_blank" rel="noopener">OAE catalog</a></td></tr>
+          <tr><td>THB per USD</td><td>BOT reference rate</td><td>16 Nov 2026: 33.8640. Chart shows 9–16 Nov only.</td><td><a href="https://app.bot.or.th/BTWS_STAT/statistics/BOTWEBSTAT.aspx?language=ENG&amp;reportID=123" target="_blank" rel="noopener">BOT exchange-rate report 123</a></td></tr>
+          <tr><td>Thai domestic white / refined sugar</td><td>Administered prices, last published notice found</td><td>Effective 8 Nov 2025, crop year 2568/69: 21 and 22 baht/kg ex-VAT. Confirm current crop year with OCSB.</td><td><a href="https://www.bangkokbiznews.com/news/news-update/1210518" target="_blank" rel="noopener">Royal Gazette / OCSB coverage, Bangkok Biz News</a></td></tr>
+          <tr><td>ONI and ENSO outlook</td><td>Observed 3-month index and official advisory</td><td>ONI through ASO 2026; discussion 12 Nov 2026; BoM wrap retrieved 17 Nov 2026</td><td><a href="https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt" target="_blank" rel="noopener">NOAA ONI</a> · <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.html" target="_blank" rel="noopener">CPC discussion</a> · <a href="https://www.bom.gov.au/climate/enso/" target="_blank" rel="noopener">BoM ENSO</a></td></tr>
+          <tr><td>Thailand rainfall / crop impact</td><td>Official outlook plus USDA citation of TMD</td><td>TMD outlook issued 25 Sep 2026; USDA FAS 2026 semi-annual</td><td><a href="https://www.tmd.go.th/climate/El-Nino-La-Nina" target="_blank" rel="noopener">TMD ENSO page</a> · TMD Oct–Dec 2026 PDF · USDA FAS TH2026-0038</td></tr>
+          <tr><td>Other packaging (PET, tinplate, carton)</td><td>No clean official free time series retrieved for this mock-up</td><td>—</td><td>Marked as a gap / sample. Use Malee contract prices from Purchasing in a live version.</td></tr>
+        </tbody>
+      </table>
+      <ul class="plain">
+        <li>Nothing on this page is inside information or a confidential Malee cost. Public MD&amp;A figures are cited. Example weights are labelled as samples.</li>
+        <li>This file is a static mock-up for discussion. It is not a live data feed and will not update itself.</li>
+        <li>Suggested next steps: connect official live feeds (BOT historical file, ICE/LME, OAE/NABC API, World Bank Pink Sheet); replace example cost-mix weights with Purchasing’s actual bill of materials, by brand and channel; add aromatic-coconut (nam-hom) prices from farm or factory invoices; confirm Thai domestic sugar with OCSB for the current crop year; add PET, tinplate and carton contract or regional benchmarks.</li>
+      </ul>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">Commodity &amp; Price Watch mock-up · compiled 17 November 2026, Asia/Bangkok · public sources only · not for trading advice.</div>
+  </footer>
+  <script>
+  const tiles = [
+    {
+      id: "sugar",
+      title: "World raw sugar (ICE No.11)",
+      value: "18.16",
+      unit: "US cents per pound",
+      asof: "16 Nov 2026",
+      chg: { m1: -12.9, m3: null, m12: null },
+      chgNote: "1M vs 16 Oct 2026 close of 20.85 ¢/lb. 3M and 12M are not taken from the same daily ICE file in this mock-up; World Bank monthly world sugar was $0.43/kg in Oct 2026, up 26.5% vs Jul 2026 and vs Oct 2025.",
+      src: { label: "FT.com, Sugar #11 close", href: "https://markets.ptc.ft.markitdigital.com/data/commodities/tearsheet/historical?c=Sugar+%2311" },
+      status: "green",
+      statusLabel: "Green — cheaper than a month ago",
+      why: "A lower world raw-sugar price eases input cost if Malee buys at world-linked prices. The 12-month World Bank monthly series is still up, so this is “easing recently after a rise”, not a new low for the year."
+    },
+    {
+      id: "thaisugar",
+      title: "Thai white sugar (administered)",
+      value: "21",
+      unit: "THB per kg, white (22 refined)",
+      asof: "Last published notice: 8 Nov 2025",
+      chg: { m1: 0, m3: 0, m12: null },
+      chgNote: "These are official administered prices for crop year 2568/69, ex-VAT, not a free-market quote. Confirm with OCSB whether they still apply in crop year 2569/70.",
+      src: { label: "OCSB / Royal Gazette coverage", href: "https://www.bangkokbiznews.com/news/news-update/1210518" },
+      status: "green",
+      statusLabel: "Green / unchanged — if still in force",
+      why: "Domestic factory sugar does not move with ICE unless the Board issues a new notice."
+    },
+    {
+      id: "al",
+      title: "Aluminium (LME cash)",
+      value: "3,332",
+      unit: "USD per tonne",
+      asof: "16 Nov 2026",
+      chg: { m1: 10.6, m3: 1.8, m12: 19.1 },
+      chgNote: "Vs 16 Oct 2026 ($3,014), 17 Aug 2026 ($3,272) and 17 Nov 2025 ($2,798). Official 3-month price the same day was $3,020.",
+      src: { label: "Westmetall, LME official settlements", href: "https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Al_cash" },
+      status: "red",
+      statusLabel: "Red — up 10.6% in a month, 19.1% in a year",
+      why: "Can and end-sheet costs. The one-month jump and the 12-month rise both breach the default red rules."
+    },
+    {
+      id: "coco",
+      title: "Thai large mature coconut (farm-gate)",
+      value: "8.27",
+      unit: "THB per nut (from 827.23 baht/100 nuts)",
+      asof: "October 2026 (latest complete official month)",
+      chg: { m1: 36.6, m3: 35.7, m12: -53.9 },
+      chgNote: "OAE series. Not aromatic nam-hom. A preliminary week-1 November sheet printed 984 baht/100 nuts (฿9.84/nut); that is a one-week average, not a monthly official figure.",
+      src: { label: "OAE catalog, monthly farm-gate coconut", href: "https://catalog.oae.go.th/dataset/monthly_prices_coconut" },
+      status: "amber",
+      statusLabel: "Amber — bouncing from lows; still cheap vs a year ago",
+      why: "The 1-month and 3-month rises are large, but the 12-month change is still −53.9%. Combined with the El Niño lag pattern, this is a watch, not a declared cost crisis."
+    },
+    {
+      id: "pine",
+      title: "Thai factory pineapple (farm-gate)",
+      value: "9.71",
+      unit: "THB per kg",
+      asof: "October 2026 (latest complete official month)",
+      chg: { m1: 4.0, m3: 11.5, m12: 4.2 },
+      chgNote: "OAE factory pineapple (สับปะรดโรงงาน). Week-1 November sheet: 9.74 baht/kg, preliminary.",
+      src: { label: "OAE catalog, monthly farm-gate pineapple", href: "https://catalog.oae.go.th/dataset/monthly_prices_pineapples" },
+      status: "amber",
+      statusLabel: "Amber — up 11.5% over three months",
+      why: "A steady three-month rise, with El Niño and TMD’s drier outlook in the background."
+    },
+    {
+      id: "fx",
+      title: "Thai baht per US dollar",
+      value: "33.8640",
+      unit: "THB per 1 USD (BOT reference)",
+      asof: "16 Nov 2026",
+      chg: { m1: null, m3: null, m12: null },
+      chgNote: "Official BOT history for 1M/3M/12M was not retrieved in this mock-up. Over the official week on the BOT table, the rate moved from 33.3920 (10 Nov) to 33.8640 (16 Nov), a 1.4% weaker baht.",
+      src: { label: "Bank of Thailand, report 123", href: "https://app.bot.or.th/BTWS_STAT/statistics/BOTWEBSTAT.aspx?language=ENG&reportID=123" },
+      status: "watch",
+      statusLabel: "Watch — official week only",
+      why: "A weaker baht makes imported sugar, metal and packaging dearer in baht. No official 1M/3M/12M change is shown."
+    },
+    {
+      id: "oil",
+      title: "Coconut oil (international proxy)",
+      value: "2,029",
+      unit: "USD per tonne",
+      asof: "October 2026 (World Bank monthly)",
+      chg: { m1: -2.4, m3: 5.5, m12: -20.3 },
+      chgNote: "Vs Sep 2026 ($2,079), Jul 2026 ($1,924) and Oct 2025 ($2,547). This is not a Thai farm-gate coconut price.",
+      src: { label: "World Bank Pink Sheet, coconut oil", href: "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx" },
+      status: "green",
+      statusLabel: "Green — still well below a year ago",
+      why: "Useful as a global coconut-complex check alongside the Thai farm-gate nut price."
+    },
+    {
+      id: "pack",
+      title: "Other packaging (PET, tinplate, carton)",
+      value: "—",
+      unit: "No official free series in this mock-up",
+      asof: "Not sourced",
+      chg: { m1: null, m3: null, m12: null },
+      chgNote: "Sample / gap. Do not treat any placeholder as a real price. Purchasing contract prices should fill this tile in a live dashboard.",
+      src: { label: "Not sourced — sample gap", href: "#sources" },
+      status: "watch",
+      statusLabel: "Sample / data gap",
+      why: "Aluminium is the packaging series we could source cleanly. PET, tinplate and paper/carton need contract or paid benchmarks.",
+      sample: true
+    }
+  ];
+
+  function fmtChg(v) {
+    if (v === null || v === undefined) return '<span class="flat">n/a</span>';
+    const cls = v > 0.05 ? "up" : (v < -0.05 ? "down" : "flat");
+    const sign = v > 0 ? "+" : "";
+    return '<span class="' + cls + '">' + sign + v.toFixed(1) + "%</span>";
+  }
+
+  const tileRoot = document.getElementById("tiles");
+  tiles.forEach(t => {
+    const el = document.createElement("article");
+    el.className = "card tile";
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+        <h3>${t.title}</h3>
+        ${t.sample ? '<span class="badge sample">Sample / gap</span>' : '<span class="badge real">Public data</span>'}
+      </div>
+      <div class="big">${t.value}</div>
+      <div class="unit">${t.unit}</div>
+      <div class="chg">
+        <span>1M ${fmtChg(t.chg.m1)}</span>
+        <span>3M ${fmtChg(t.chg.m3)}</span>
+        <span>12M ${fmtChg(t.chg.m12)}</span>
+      </div>
+      <div><span class="status ${t.status}"><span class="dot"></span>${t.statusLabel}</span></div>
+      <p class="note">${t.why}</p>
+      <p class="note">${t.chgNote}</p>
+      <p class="src">As of ${t.asof} · <a href="${t.src.href}" target="_blank" rel="noopener">${t.src.label}</a></p>
+    `;
+    tileRoot.appendChild(el);
+  });
+
+  const alerts = [
+    { cls: "red", tag: "Red", title: "Aluminium up sharply", body: "LME cash aluminium settled at $3,332/t on 16 November 2026, up 10.6% from 16 October and 19.1% from 17 November 2025. The official 3-month contract was $3,020 the same day, so the market is pricing a lower price three months out — but today’s cash price is what hits nearby can costs. Source: Westmetall / LME." },
+    { cls: "amber", tag: "Amber + El Niño watch", title: "Coconut farm-gate bouncing; 2027 is the year to watch", body: "Official October 2026 farm-gate large mature coconut is ฿8.27/nut, up about 36% from September but still 53.9% below October 2025. After the last two strong El Niños, this official series peaked 12–18 months later. NOAA’s 12 November advisory says a strong-to-very strong El Niño is likely through early 2027. This is a historical pattern, not a price forecast." },
+    { cls: "amber", tag: "Amber", title: "Factory pineapple up over three months", body: "Official October 2026 factory pineapple is ฿9.71/kg, up 11.5% versus July and 4.2% versus a year earlier. TMD’s October–December 2026 outlook called for below-normal rain in most of Thailand. Worth tracking into the dry season." },
+    { cls: "green", tag: "Green, with a caveat", title: "World raw sugar cheaper than a month ago", body: "ICE No.11 closed at 18.16 ¢/lb on 16 November, 12.9% below 16 October. The futures curve also slopes down into mid-2027. The World Bank monthly world price is still 26.5% above mid-2026 and above October 2025, and USDA has flagged a smaller Thai 2026/27 cane crop under El Niño. Recent ease, not an all-clear on supply." },
+    { cls: "watch", tag: "Watch", title: "Baht slightly weaker in the latest official week", body: "The Bank of Thailand reference rate was 33.8640 baht per dollar on 16 November, versus 33.3920 on 10 November. A formal 1M/3M/12M official comparison is not shown in this mock-up." }
+  ];
+  const alRoot = document.getElementById("alerts-list");
+  alerts.forEach(a => {
+    const el = document.createElement("div");
+    el.className = "alert " + a.cls;
+    el.innerHTML = `<div><span class="status ${a.cls}"><span class="dot"></span>${a.tag}</span></div><div><strong>${a.title}</strong><p class="note" style="margin-top:4px">${a.body}</p></div>`;
+    alRoot.appendChild(el);
+  });
+
+  const months = ["Nov 24","Dec 24","Jan 25","Feb 25","Mar 25","Apr 25","May 25","Jun 25","Jul 25","Aug 25","Sep 25","Oct 25","Nov 25","Dec 25","Jan 26","Feb 26","Mar 26","Apr 26","May 26","Jun 26","Jul 26","Aug 26","Sep 26","Oct 26"];
+  const sugarWB = [0.45,0.44,0.40,0.42,0.42,0.40,0.39,0.37,0.37,0.37,0.35,0.34,0.32,0.32,0.32,0.31,0.33,0.32,0.34,0.32,0.34,0.38,0.41,0.43];
+  const oilWB = [1879,1973,1978,1990,2356,2483,2767,2699,2841,2742,2597,2547,2440,2323,2197,2259,2349,2332,2172,1979,1924,1981,2079,2029];
+  const coco = [21.69,22.36,21.32,21.01,20.04,20.54,20.49,19.04,16.73,16.43,16.65,17.93,16.81,15.74,12.96,12.03,10.59,8.31,8.61,6.90,6.10,6.02,6.06,8.27];
+  const pine = [11.92,12.56,13.17,13.96,13.62,13.42,11.88,10.88,11.64,11.68,10.55,9.32,7.62,6.49,5.96,6.78,6.75,6.21,6.34,7.42,8.71,9.16,9.34,9.71];
+  const alM = { labels: ["Nov 25","Dec 25","Jan 26","Feb 26","Mar 26","Apr 26","May 26","Jun 26","Jul 26","Aug 26","Sep 26","Oct 26"], values: [2822.93,2875.45,3148.40,3065.35,3370.16,3600.62,3670.18,3458.64,3155.98,3249.62,3276.82,3061.11] };
+  const fxLabels = ["9 Nov","10 Nov","11 Nov","12 Nov","13 Nov","16 Nov"];
+  const fxVals = [33.5270,33.3920,33.6100,33.7760,33.8590,33.8640];
+
+  const oniSeasons = ["DJF","JFM","FMA","MAM","AMJ","MJJ","JJA","JAS","ASO","SON","OND","NDJ"];
+  const oniVals = [0.73, 0.65, 0.72, 0.86, 1.04, 1.19, 1.44, 1.73, 2.02, 2.28, 2.45, 2.59, 2.5, 2.21, 1.69, 1.11, 0.57, 0.09, -0.19, -0.34, -0.42, -0.51, -0.49, -0.37, -0.08, 0.08, 0.27, 0.32, 0.35, 0.32, 0.14, -0.07, -0.23, -0.44, -0.61, -0.76, -0.71, -0.67, -0.55, -0.35, -0.07, 0.13, 0.2, 0.3, 0.52, 0.82, 1.04, 1.05, 0.99, 0.94, 0.87, 0.82, 0.71, 0.59, 0.38, 0.2, 0.31, 0.51, 0.72, 0.75, 0.71, 0.66, 0.57, 0.33, 0.04, -0.18, -0.29, -0.43, -0.77, -1.0, -1.11, -1.06, -0.99, -0.85, -0.74, -0.56, -0.4, -0.31, -0.35, -0.46, -0.64, -0.77, -0.91, -0.83, -0.76, -0.68, -0.77, -0.86, -0.83, -0.73, -0.7, -0.78, -0.87, -0.89, -0.82, -0.7, -0.55, -0.33, -0.11, 0.19, 0.46, 0.73, 1.0, 1.25, 1.5, 1.74, 1.9, 1.99, 1.84, 1.53, 1.18, 0.77, 0.43, 0.18, 0.06, -0.04, -0.12, -0.19, -0.29, -0.43, -0.46, -0.22, -0.08, 0.02, -0.04, -0.02, -0.11, -0.26, -0.43, -0.57, -0.61, -0.6, -0.39, -0.21, 0.11, 0.46, 0.95, 1.39, 1.8, 2.16, 2.46];
+  const oniLabels = oniVals.map((_, i) => {
+    const year = 2015 + Math.floor(i / 12);
+    const seas = oniSeasons[i % 12];
+    return (seas === "DJF") ? "DJF " + year : (seas === "JJA" ? "JJA " + year : "");
+  });
+  oniLabels[oniLabels.length - 1] = "ASO 2026";
+
+  const axis = { ticks: { color: "#5a635a", font: { size: 11 } }, grid: { color: "rgba(0,0,0,0.06)" } };
+  function lineChart(id, labels, data, color, ylabel) {
+    const ctx = document.getElementById(id);
+    new Chart(ctx, {
+      type: "line",
+      data: { labels, datasets: [{ data, borderColor: color, backgroundColor: color + "22", fill: true, tension: 0.2, pointRadius: 2, pointHoverRadius: 5, borderWidth: 2 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { title: (items) => labels[items[0].dataIndex] || "" } } },
+        scales: { x: axis, y: { ...axis, title: { display: true, text: ylabel, color: "#5a635a" } } }
+      }
+    });
+  }
+  lineChart("chartSugar", months, sugarWB, "#1b6b48", "USD/kg");
+  lineChart("chartOil", months, oilWB, "#245e7a", "USD/t");
+  lineChart("chartCoco", months, coco, "#1b6b48", "THB/nut");
+  lineChart("chartPine", months, pine, "#8a5a10", "THB/kg");
+  lineChart("chartAl", alM.labels, alM.values, "#9a2e2e", "USD/t");
+  lineChart("chartFx", fxLabels, fxVals, "#245e7a", "THB per USD");
+
+  // Sugar forward + sample band
+  new Chart(document.getElementById("chartSugarFwd"), {
+    type: "line",
+    data: {
+      labels: ["16 Nov 2026 (front)", "Mar 2027", "May 2027", "Jul 2027", "Oct 2027"],
+      datasets: [
+        { label: "ICE settlement ¢/lb", data: [18.16, 18.10, 17.59, 17.26, 17.29], borderColor: "#1b6b48", tension: 0.2, pointRadius: 4, borderWidth: 2 },
+        { label: "Sample +5% band", data: [18.16*1.05, 18.10*1.05, 17.59*1.05, 17.26*1.05, 17.29*1.05], borderColor: "rgba(27,107,72,0.25)", borderDash: [5,4], pointRadius: 0, fill: false },
+        { label: "Sample −5% band", data: [18.16*0.95, 18.10*0.95, 17.59*0.95, 17.26*0.95, 17.29*0.95], borderColor: "rgba(27,107,72,0.25)", borderDash: [5,4], pointRadius: 0, fill: "-1" }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } }, scales: { x: axis, y: { ...axis, title: { display: true, text: "US ¢/lb", color: "#5a635a" } } } }
+  });
+
+  new Chart(document.getElementById("chartAlFwd"), {
+    type: "bar",
+    data: {
+      labels: ["Cash (16 Nov 2026)", "Official 3-month"],
+      datasets: [{ data: [3332, 3020], backgroundColor: ["#9a2e2e", "#1b6b48"], borderRadius: 6, barPercentage: 0.5 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: axis, y: { ...axis, title: { display: true, text: "USD/t", color: "#5a635a" }, suggestedMin: 2800 } } }
+  });
+
+  new Chart(document.getElementById("chartOni"), {
+    type: "line",
+    data: {
+      labels: oniLabels,
+      datasets: [
+        { label: "ONI °C", data: oniVals, borderColor: "#9a2e2e", backgroundColor: "rgba(154,46,46,0.12)", fill: true, tension: 0.15, pointRadius: 0, borderWidth: 2, pointHitRadius: 6 },
+        { label: "+0.5 El Niño threshold", data: oniVals.map(() => 0.5), borderColor: "#8a5a10", borderDash: [6,4], pointRadius: 0, borderWidth: 1 },
+        { label: "−0.5 La Niña threshold", data: oniVals.map(() => -0.5), borderColor: "#245e7a", borderDash: [6,4], pointRadius: 0, borderWidth: 1 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } }, scales: { x: { ...axis, ticks: { ...axis.ticks, autoSkip: false, maxRotation: 0, callback: (v,i) => oniLabels[i] } }, y: { ...axis, title: { display: true, text: "°C", color: "#5a635a" } } } }
+  });
+
+  // Sensitivity
+  const items = [
+    { id: "sugar", name: "World / purchased sugar", def: 12, chg: { m1: -12.9, m3: 26.5, m12: 26.5 }, note: "1M uses ICE No.11 (−12.9%). 3M and 12M use World Bank monthly world sugar (+26.5% vs Jul 2026 and vs Oct 2025). These are different series — read the period label." },
+    { id: "coco", name: "Thai coconut (farm-gate)", def: 15, chg: { m1: 36.6, m3: 35.7, m12: -53.9 }, note: "OAE large mature coconut. 3M is a rebound from a trough; 12M is still sharply down." },
+    { id: "pine", name: "Pineapple and other fruit", def: 10, chg: { m1: 4.0, m3: 11.5, m12: 4.2 }, note: "Default change is official factory pineapple only." },
+    { id: "al", name: "Aluminium packaging", def: 8, chg: { m1: 10.6, m3: 1.8, m12: 19.1 }, note: "LME cash." },
+    { id: "pack", name: "Other packaging (PET, tinplate, carton)", def: 7, chg: { m1: 0, m3: 0, m12: 0 }, note: "Sample: change held at 0 until contract prices are loaded." },
+    { id: "fx", name: "Other imported inputs (FX)", def: 10, chg: { m1: 0, m3: 0, m12: 0 }, note: "Sample: official 1M/3M/12M FX change not loaded. The latest BOT week was +1.4%; it is not applied automatically." }
+  ];
+  const sliders = document.getElementById("sliders");
+  items.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "slider-row";
+    row.innerHTML = `<label for="w-${it.id}">${it.name}</label>
+      <input id="w-${it.id}" type="range" min="0" max="40" step="1" value="${it.def}" />
+      <span id="wv-${it.id}">${it.def}%</span>`;
+    sliders.appendChild(row);
+    sliders.insertAdjacentHTML("beforeend", `<p class="note" style="margin:-4px 0 10px 0">${it.note}</p>`);
+    document.getElementById("w-" + it.id).addEventListener("input", () => {
+      document.getElementById("wv-" + it.id).textContent = document.getElementById("w-" + it.id).value + "%";
+      recalc();
+    });
+  });
+  document.getElementById("period").addEventListener("change", recalc);
+
+  function recalc() {
+    const per = document.getElementById("period").value;
+    const cogs = 0.826;
+    let impact = 0;
+    let used = 0;
+    items.forEach(it => {
+      const w = Number(document.getElementById("w-" + it.id).value) / 100;
+      const p = it.chg[per];
+      if (p === null || p === undefined) return;
+      impact += -w * (p / 100) * cogs * 100;
+      used += w;
+    });
+    const gpm = 17.4 + impact;
+    document.getElementById("gpmOut").textContent = gpm.toFixed(1) + "%";
+    const sign = impact >= 0 ? "+" : "";
+    document.getElementById("gpmDelta").textContent = sign + impact.toFixed(2) + " percentage points vs 17.4%";
+    let band = "Inside the 17–19% target band (illustrated).";
+    if (gpm < 17) band = "Below the 17% floor of the target band (illustrated).";
+    if (gpm > 19) band = "Above the 19% ceiling of the target band (illustrated).";
+    document.getElementById("gpmBand").textContent = band;
+    const left = ((gpm - 15) / 5) * 100;
+    document.getElementById("bandMark").style.left = Math.min(100, Math.max(0, left)) + "%";
+    document.getElementById("gpmCaveat").textContent = "Example weights now sum to " + (used * 100).toFixed(0) + "% of cost of sales (the rest of COGS is assumed unchanged). Period = " + ({ m1: "1 month", m3: "3 months", m12: "12 months" }[per]) + ". Coconut’s 3-month bounce can dominate the result; try the 12-month view as a cross-check.";
+  }
+  recalc();
+  </script>
+</body>
+</html>
