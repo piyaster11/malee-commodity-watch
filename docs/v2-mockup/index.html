@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Commodity Watch — v4 mock-up — Malee</title>
+  <meta name="description" content="Mock-up of a split Malee Commodity Watch: concentrate, ingredient, packaging, energy and scrap, with a Thai/English menu, 12-month projections and a data-source status table. Sample figures are labelled. Not the live dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+:root {
+  --bg: #f4f1e8;
+  --ink: #1b241c;
+  --muted: #5a635a;
+  --card: #fffdf8;
+  --line: #e0d8c8;
+  --green: #1b6b48;
+  --green-soft: #e7f4ec;
+  --amber: #8a5a10;
+  --amber-soft: #f7eed6;
+  --red: #9a2e2e;
+  --red-soft: #f8e7e7;
+  --blue: #245e7a;
+  --blue-soft: #e7f1f6;
+  --chip: #efe8d8;
+  --header: #163524;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Libre Franklin", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+header.app {
+  background: var(--header);
+  color: #f6f3eb;
+  padding: 18px 20px 0;
+}
+header.app .wrap, main, footer, .tabbar .inner { max-width: 1180px; margin: 0 auto; }
+header.app .wrap { position: relative; }
+header.app h1 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(26px, 4vw, 38px);
+  margin: 8px 0 8px;
+  letter-spacing: -0.02em;
+}
+header.app .lede { margin: 0 0 12px; color: #d7e3d9; max-width: 80ch; }
+.kicker { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #b7cfc0; }
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.badge.mock { background: #f0d48a; color: #4a3500; }
+.badge.sample { background: #f3d27a; color: #4a3500; }
+.badge.real { background: var(--green-soft); color: var(--green); }
+.badge.prelim { background: var(--blue-soft); color: var(--blue); }
+.badge.free { background: var(--green-soft); color: var(--green); }
+.badge.paid { background: var(--amber-soft); color: var(--amber); }
+.badge.partial { background: var(--blue-soft); color: var(--blue); }
+.badge.procurement, .badge.needs { background: #efe4f4; color: #5a2e7a; }
+.badge.yes { background: var(--green-soft); color: var(--green); }
+.badge.no { background: var(--red-soft); color: var(--red); }
+.langsw {
+  position: absolute; top: 0; right: 0;
+  display: inline-flex;
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 999px; overflow: hidden;
+}
+.langsw button {
+  background: transparent; color: #d7e3d9; border: 0;
+  padding: 5px 12px; font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; min-width: 44px;
+}
+.langsw button.on { background: #fff; color: #1b6b48; }
+.fxstrip {
+  display: flex; flex-wrap: wrap; gap: 10px 18px;
+  align-items: baseline;
+  background: rgba(0,0,0,0.18);
+  margin: 8px 0 0;
+  padding: 10px 14px;
+  border-radius: 10px 10px 0 0;
+  color: #e8f0ea;
+  font-size: 14px;
+}
+.fxstrip .fxv {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 22px; font-weight: 600;
+}
+.fxstrip a { color: #cfe3d5; }
+.tabbar {
+  position: sticky; top: 0; z-index: 20;
+  background: #10281b;
+  border-bottom: 1px solid #2a4a36;
+}
+.tabbar .inner { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 20px; }
+.tabbar button {
+  background: transparent; color: #cfe3d5; border: 0;
+  font: inherit; font-size: 14px; font-weight: 600;
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+}
+.tabbar button.on { background: #fff; color: var(--header); }
+main { padding: 20px 20px 64px; }
+h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600; font-size: 26px; margin: 0 0 8px;
+}
+h3 { font-size: 16px; margin: 0 0 6px; font-weight: 650; }
+.lead { color: var(--muted); margin: 0 0 16px; max-width: 85ch; }
+.sample-banner, .callout, .card, .cwcard, .upload, .methodbox {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.sample-banner {
+  background: #fff4cc; border-color: #e6c96a; color: #4a3500;
+  padding: 12px 14px; margin: 0 0 18px; font-size: 14px;
+}
+.callout { padding: 16px 18px; margin: 0 0 18px; border-left: 5px solid var(--blue); }
+.callout.carton { border-left-color: #8a5a10; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.cwcard { padding: 14px 14px 12px; cursor: pointer; position: relative; }
+.cwcard:hover { border-color: #c8bda8; }
+.cwcard.on { outline: 2px solid var(--header); border-color: var(--header); }
+.cwcard .top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.cwcard h3 { font-size: 15px; margin: 0 0 4px; font-weight: 650; line-height: 1.3; }
+.cwcard .now {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 26px; font-weight: 600; line-height: 1.1; color: var(--header);
+}
+.cwcard .when, .cwcard .src { font-size: 12px; color: var(--muted); }
+.cwcard .src a { color: var(--blue); }
+.cwcard .chg { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 13px; margin: 6px 0 4px; }
+.up { color: var(--red); }
+.down { color: var(--green); }
+.flat { color: var(--muted); }
+.spark { position: relative; height: 64px; margin: 6px 0 0; }
+.flags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 6px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px; }
+.toolbar[hidden], [hidden] { display: none !important; }
+.toolbar button, .rangebar button, .morebtn, .upload button {
+  border: 1px solid var(--line); background: var(--card);
+  border-radius: 999px; padding: 5px 12px; cursor: pointer;
+  font: inherit; font-size: 13px;
+}
+.toolbar button.on, .rangebar button.on { background: var(--header); color: #f6f3eb; border-color: var(--header); }
+.detail {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 14px;
+  margin: 8px 0 28px;
+}
+@media (max-width: 900px) { .detail { grid-template-columns: 1fr; } }
+.chartbox, .methodbox { padding: 16px; }
+.chartbox { background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.bigchart { position: relative; height: 340px; }
+@media (max-width: 600px) { .bigchart { height: 280px; } header.app .kicker { padding-right: 104px; } }
+.methodbox .caveat {
+  background: var(--amber-soft); color: var(--amber);
+  border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-top: 10px;
+}
+.src { font-size: 12px; color: var(--muted); }
+.src a { color: var(--blue); text-underline-offset: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--card); border-radius: 14px; overflow: hidden; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; background: #f7f3ea; }
+.tablewrap { overflow-x: auto; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 14px; }
+.upload { padding: 16px; margin: 0 0 22px; }
+.upload textarea, .upload input[type=text] {
+  width: 100%; font: inherit; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 10px; background: #fff;
+}
+.upload textarea { min-height: 90px; resize: vertical; }
+.upload .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0; }
+@media (max-width: 700px) { .upload .row { grid-template-columns: 1fr; } }
+.drop {
+  border: 1.5px dashed #c8bda8; border-radius: 12px; padding: 18px;
+  text-align: center; color: var(--muted); background: #fbfaf4; margin: 8px 0;
+}
+.muted { color: var(--muted); font-size: 13px; }
+footer { padding: 24px 20px 48px; color: var(--muted); font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 16px; font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+.legend i { display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; }
+.legend i.hist { background: #163524; }
+.legend i.fut { background: #245e7a; border-top: 0; height: 0; border-bottom: 2px dashed #245e7a; }
+.legend i.ext { background: transparent; border-bottom: 2px dashed #8a8a8a; height: 0; }
+.legend i.band { background: rgba(36,94,122,0.25); height: 8px; border-radius: 2px; }
+.nodaily {
+  background: var(--blue-soft); color: var(--blue);
+  border-radius: 10px; padding: 12px; margin: 8px 0; font-size: 14px;
+}
+html[lang="th"] body, html[lang="th"] button, html[lang="th"] select, html[lang="th"] table, html[lang="th"] textarea, html[lang="th"] input {
+  font-family: "Sarabun", "Noto Sans Thai", "Libre Franklin", system-ui, sans-serif;
+}
+html[lang="th"] h1, html[lang="th"] h2, html[lang="th"] h3, html[lang="th"] .now, html[lang="th"] .fxv {
+  font-family: "Sarabun", "Noto Sans Thai", "Source Serif 4", serif; font-weight: 700;
+}
+html[lang="th"] .kicker { letter-spacing: 0.02em; }
+html[lang="th"] body { line-height: 1.65; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  </style>
+</head>
+<body>
+  <header class="app">
+    <div class="wrap">
+      <div class="langsw" role="group" aria-label="Language / ภาษา">
+        <button type="button" data-l="en" lang="en">EN</button>
+        <button type="button" data-l="th" lang="th">ไทย</button>
+      </div>
+      <div class="kicker" data-i="kicker">Malee Group PCL · Purchasing &amp; Procurement · Mock-up for review</div>
+      <h1 data-i="title">Commodity Watch — v4 mock-up</h1>
+      <p class="lede" data-i="lede">A layout for procurement’s feedback.</p>
+      <p>
+        <span class="badge mock" data-i="badge">Mock-up · v4 for review</span>
+        &nbsp; <span data-i="stamp"></span>
+      </p>
+      <div class="fxstrip">
+        <div>
+          <span data-i="fx">USD/THB</span>
+          · <span class="fxv" id="fxVal">—</span>
+          <span class="muted" style="color:#cfe3d5" id="fxUnit"></span>
+        </div>
+        <div>
+          <span id="fxWhen"></span>
+          · <a id="fxSrc" href="https://fred.stlouisfed.org/series/DEXTHUS" target="_blank" rel="noopener">FRED / Fed H.10</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <nav class="tabbar" aria-label="Categories">
+    <div class="inner">
+      <button type="button" class="on" data-tab="concentrate" data-i="tab_concentrate">Concentrate</button>
+      <button type="button" data-tab="ingredient" data-i="tab_ingredient">Ingredient</button>
+      <button type="button" data-tab="packaging" data-i="tab_packaging">Packaging</button>
+      <button type="button" data-tab="energy" data-i="tab_energy">Energy</button>
+      <button type="button" data-tab="scrap" data-i="tab_scrap">Scrap</button>
+      <button type="button" data-tab="sources" data-i="tab_sources">Sources &amp; methods</button>
+    </div>
+  </nav>
+  <main>
+    <div class="sample-banner" data-i="banner"></div>
+    <div class="toolbar" id="freqBar" hidden>
+      <span data-i="freq_lbl">Energy chart:</span>
+      <button type="button" data-f="day" data-i="freq_day">Day</button>
+      <button type="button" class="on" data-f="month" data-i="freq_month">Month</button>
+      <button type="button" data-f="year" data-i="freq_year">Year</button>
+    </div>
+    <div id="pane"></div>
+  </main>
+  <footer>
+    <div class="wrap">
+      <p data-i="foot"></p>
+    </div>
+  </footer>
+  <script>
+  window.CW4_DATA = {"generated":"24 November 2026, Asia/Bangkok","months":["2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10","2026-11"],"items":[{"id":"orange","group":"concentrate","name":"Orange juice concentrate (FCOJ futures)","name_th":"น้ำส้มเข้มข้นแช่แข็ง (FCOJ)","unit":"US¢/lb","d":[401.1,358.7,322.0,369.4,363.0,369.0,430.4,428.1,440.9,454.8,497.3,491.9,502.4,509.8,489.1,361.5,271.1,266.7,269.4,256.7,288.1,242.6,241.3,198.5,162.3,174.8,213.9,178.3,180.9,179.3,170.5,155.9,149.6,145.4,143.1,141.0,136.5],"sample":false,"latest":{"dec":2,"v":133.75,"u":"US¢/lb","when":"17 Nov 2026 close","src":"FT.com / ICE FCOJ front month","href":"https://markets.ft.com/data/commodities/tearsheet/historical?c=Orange+Juice"},"method":"Public futures curve (where listed). Months after the last traded contract are a statistical extension, drawn dashed and labelled — not a traded price. Not advice.","method_th":"ใช้เส้นฟิวเจอร์สสาธารณะในช่วงที่มีสัญญาซื้อขาย หากเลยสัญญาสุดท้าย จะต่อด้วยส่วนขยายทางสถิติ (เส้นประ ติดป้ายชัดเจน) ไม่ใช่ราคาซื้อขายจริง ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily (futures); monthly average on the card","freq_th":"รายวัน (ฟิวเจอร์ส); การ์ดแสดงค่าเฉลี่ยรายเดือน","src_name":"FT.com / ICE FCOJ front month","src_url":"https://markets.ft.com/data/commodities/tearsheet/historical?c=Orange+Juice","notes":"Real series from the live dashboard. World benchmark; Malee’s contracted FCOJ may differ from the front month.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน เป็นเกณฑ์โลก สัญญา FCOJ ที่มาลีซื้ออาจต่างจากเดือนหน้า","futures":{"labels":["2027-01","2027-03","2027-05","2027-07"],"values":[135.0,138.2,141.9,145.0],"label":"ICE FCOJ settlement, 17 Nov 2026","label_th":"ราคาชำระ ICE FCOJ วันที่ 17 พ.ย. 2026","source":"ICE FCOJ futures (from live dashboard, 17 Nov 2026)"},"tag":"Orange"},{"id":"apple","group":"concentrate","name":"Apple juice concentrate","name_th":"น้ำแอปเปิลเข้มข้น","unit":"USD/t","d":[1648.0,1660.0,1707.0,1681.0,1618.0,1619.0,1645.0,1700.0,1635.0,1565.0,1590.0,1604.0,1669.0,1712.0,1704.0,1691.0,1824.0,1813.0,1774.0,1714.0,1716.0,1717.0,1690.0,1677.0,1682.0,1711.0,1764.0,1776.0,1684.0,1724.0,1654.0,1646.0,1570.0,1565.0,1520.0,1521.0,1663.0],"sample":true,"latest":{"v":1663.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"No free public spot series at this grade; USDA juice trade values and paid indexes are the usual path (ตัวอย่าง / sample)","href":"https://apps.fas.usda.gov/gats/default.aspx"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Typically weekly (paid trade press / Mintec or similar)","freq_th":"โดยทั่วไปรายสัปดาห์ (สื่อการค้าแบบเสียเงิน / Mintec หรือเทียบเท่า)","src_name":"No free public spot series at this grade; USDA juice trade values and paid indexes are the usual path","src_url":"https://apps.fas.usda.gov/gats/default.aspx","notes":"USDA FAS trade values can give a rough unit-value check. A paid concentrate index, or procurement invoices, is needed for the grade Malee buys.","notes_th":"ตัวเลขการค้า USDA FAS ใช้เช็กมูลค่าต่อหน่วยคร่าวได้ แต่เกรดที่มาลีซื้อต้องใช้ดัชนีแบบเสียเงินหรือใบแจ้งหนี้จากจัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pjc","group":"concentrate","name":"Pineapple juice concentrate","name_th":"น้ำสับปะรดเข้มข้น","unit":"USD/t","d":[1924.0,1939.0,1919.0,1889.0,1971.0,1988.0,1977.0,2126.0,2085.0,1977.0,1861.0,1814.0,1856.0,1916.0,2005.0,2160.0,2320.0,2395.0,2538.0,2616.0,2563.0,2648.0,2650.0,2622.0,2829.0,2918.0,2869.0,2876.0,3168.0,3162.0,3279.0,3380.0,3460.0,3544.0,3470.0,3399.0,3372.0],"sample":true,"latest":{"v":3372.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"OAE farm-gate pineapple (proxy) + paid concentrate index / procurement (ตัวอย่าง / sample)","href":"https://www.oae.go.th/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"partial","feasible":"partial","freq":"No free concentrate series; Thai farm-gate pineapple is monthly (OAE)","freq_th":"ไม่มีชุดน้ำเข้มข้นฟรี; สับปะรดโรงงานไทยเป็นรายเดือน (สำนักงานเศรษฐกิจการเกษตร)","src_name":"OAE farm-gate pineapple (proxy) + paid concentrate index / procurement","src_url":"https://www.oae.go.th/","notes":"The live dashboard already has Thai factory pineapple (OAE). That is the fruit input, not the concentrate. Use it as a direction check; the concentrate card is sample until a paid series or invoices are added.","notes_th":"แดชบอร์ดปัจจุบันมีสับปะรดโรงงานไทย (สำนักงานเศรษฐกิจการเกษตร) ซึ่งเป็นวัตถุดิบผลไม้ ไม่ใช่น้ำเข้มข้น ใช้ดูทิศทางได้ ราคาน้ำเข้มข้นบนการ์ดเป็นตัวอย่างจนกว่าจะมีดัชนีแบบเสียเงินหรือใบแจ้งหนี้","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pine","group":"concentrate","name":"Thai factory pineapple (farm-gate, related input)","name_th":"สับปะรดโรงงานไทย (ราคาเกษตรกร — วัตถุดิบที่เกี่ยวข้อง)","unit":"THB/kg","d":[10.45,10.65,10.6,10.85,11.32,11.95,12.34,12.59,11.86,12.09,12.2,12.26,11.92,12.56,13.17,13.96,13.62,13.42,11.88,10.88,11.64,11.68,10.55,9.32,7.62,6.49,5.96,6.78,6.75,6.21,6.34,7.42,8.71,9.16,9.34,9.71,null],"sample":false,"latest":{"v":9.31,"u":"THB/kg","when":"Nov 2026, first 2 weeks (preliminary)","src":"OAE weekly sheet","href":"https://oae.go.th/uploads/files/2026/11/13/8e19fd700d3f9549.pdf"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Monthly (OAE); Nov 2026 is a preliminary 2-week average","freq_th":"รายเดือน (สำนักงานเศรษฐกิจการเกษตร); พ.ย. 2026 เป็นค่าเฉลี่ย 2 สัปดาห์เบื้องต้น","src_name":"OAE / NABC farm-gate pineapple","src_url":"https://www.oae.go.th/","notes":"Real series from the live dashboard. Related fruit input, not the concentrate itself.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน เป็นวัตถุดิบผลไม้ที่เกี่ยวข้อง ไม่ใช่ตัวน้ำเข้มข้น","futures":null,"tag":"Fruits"},{"id":"rgrape","group":"concentrate","name":"Red grape juice concentrate","name_th":"น้ำองุ่นแดงเข้มข้น","unit":"USD/t","d":[1567.0,1646.0,1601.0,1506.0,1528.0,1573.0,1604.0,1641.0,1638.0,1603.0,1557.0,1540.0,1517.0,1567.0,1606.0,1545.0,1596.0,1609.0,1687.0,1787.0,1828.0,1715.0,1752.0,1652.0,1741.0,1702.0,1697.0,1818.0,1721.0,1739.0,1689.0,1669.0,1628.0,1669.0,1649.0,1666.0,1702.0],"sample":true,"latest":{"v":1702.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"Paid trade press (e.g. Foodnews, Mintec) — no free public series found (ตัวอย่าง / sample)","href":"https://www.mintecglobal.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Trade press / paid index, or supplier quotes","freq_th":"สื่อการค้า / ดัชนีแบบเสียเงิน หรือใบเสนอราคาจากผู้ขาย","src_name":"Paid trade press (e.g. Foodnews, Mintec) — no free public series found","src_url":"https://www.mintecglobal.com/","notes":"No free public time series found for this grade. Mock-up shows a sample path and a procurement upload path.","notes_th":"ไม่พบชุดเวลาราคาสาธารณะฟรีสำหรับเกรดนี้ ม็อกอัปแสดงเส้นตัวอย่างและช่องให้จัดซื้ออัปโหลด","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"wgrape","group":"concentrate","name":"White grape juice concentrate","name_th":"น้ำองุ่นขาวเข้มข้น","unit":"USD/t","d":[1466.0,1505.0,1443.0,1363.0,1364.0,1402.0,1402.0,1344.0,1324.0,1378.0,1315.0,1350.0,1365.0,1381.0,1413.0,1394.0,1395.0,1477.0,1466.0,1452.0,1391.0,1368.0,1392.0,1437.0,1459.0,1483.0,1509.0,1528.0,1581.0,1582.0,1640.0,1641.0,1563.0,1499.0,1485.0,1457.0,1398.0],"sample":true,"latest":{"v":1398.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"Paid trade press (e.g. Foodnews, Mintec) — no free public series found (ตัวอย่าง / sample)","href":"https://www.mintecglobal.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Trade press / paid index, or supplier quotes","freq_th":"สื่อการค้า / ดัชนีแบบเสียเงิน หรือใบเสนอราคาจากผู้ขาย","src_name":"Paid trade press (e.g. Foodnews, Mintec) — no free public series found","src_url":"https://www.mintecglobal.com/","notes":"Same as red grape: no free public series found. Keep separate from red grape; they do not always move together.","notes_th":"เหมือนน้ำองุ่นแดง: ไม่พบชุดสาธารณะฟรี แยกจากองุ่นแดง เพราะราคาไม่เคลื่อนด้วยกันเสมอ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pear","group":"concentrate","name":"Deionized pear juice concentrate","name_th":"น้ำสาลี่ดีไอออนไนซ์เข้มข้น","unit":"USD/t","d":[1183.0,1181.0,1181.0,1166.0,1175.0,1178.0,1214.0,1185.0,1263.0,1160.0,1160.0,1185.0,1177.0,1153.0,1153.0,1176.0,1217.0,1172.0,1182.0,1165.0,1197.0,1180.0,1182.0,1212.0,1200.0,1205.0,1180.0,1172.0,1114.0,1090.0,1077.0,1057.0,1115.0,1045.0,981.0,983.0,995.0],"sample":true,"latest":{"v":995.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"Paid trade press — no free public series found (ตัวอย่าง / sample)","href":"https://www.mintecglobal.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Trade press / paid index, or supplier quotes","freq_th":"สื่อการค้า / ดัชนีแบบเสียเงิน หรือใบเสนอราคาจากผู้ขาย","src_name":"Paid trade press — no free public series found","src_url":"https://www.mintecglobal.com/","notes":"Often used as a natural sweetener base. No free public series found; procurement invoices are the practical feed.","notes_th":"มักใช้เป็นฐานให้ความหวานจากธรรมชาติ ไม่พบชุดสาธารณะฟรี ใบแจ้งหนี้จากจัดซื้อคือแหล่งที่ใช้ได้จริง","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"mango","group":"concentrate","name":"Alphonso mango puree","name_th":"มะม่วงอัลฟอนโซบด (เพียวเร่)","unit":"USD/t","d":[1302.0,1355.0,1291.0,1330.0,1256.0,1313.0,1316.0,1414.0,1473.0,1472.0,1443.0,1468.0,1457.0,1389.0,1432.0,1263.0,1267.0,1410.0,1455.0,1359.0,1433.0,1441.0,1391.0,1340.0,1341.0,1394.0,1388.0,1514.0,1477.0,1550.0,1442.0,1309.0,1304.0,1319.0,1434.0,1402.0,1416.0],"sample":true,"latest":{"v":1416.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"Paid trade press or Indian pack quotes — no free public series found (ตัวอย่าง / sample)","href":"https://www.mintecglobal.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Seasonal pack quotes / paid index, or procurement","freq_th":"ราคาแพ็กตามฤดูกาล / ดัชนีแบบเสียเงิน หรือจัดซื้อ","src_name":"Paid trade press or Indian pack quotes — no free public series found","src_url":"https://www.mintecglobal.com/","notes":"Alphonso is a named origin/variety; a generic mango pulp index would be only a rough proxy. Prefer supplier contracts and a procurement upload.","notes_th":"อัลฟอนโซเป็นพันธุ์และแหล่งที่ระบุชื่อ ดัชนีมะม่วงทั่วไปเป็นได้แค่ตัวแทนคร่าว ๆ ควรใช้สัญญาผู้ขายและให้จัดซื้ออัปโหลด","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"cwc","group":"concentrate","name":"Coconut water concentrate","name_th":"น้ำมะพร้าวเข้มข้น","unit":"USD/kg","d":[3.14,3.11,3.21,3.19,3.22,3.03,3.01,2.97,3.08,3.1,3.08,2.98,2.86,2.86,3.01,2.78,2.46,2.68,2.87,2.96,3.0,2.95,2.9,2.74,2.8,2.78,2.55,2.51,2.46,2.41,2.61,2.74,2.38,2.43,2.53,2.66,2.75],"sample":true,"latest":{"v":2.75,"u":"USD/kg","when":"ตัวอย่าง / sample — not a live quote","src":"OAE Thai coconut (related input) + paid index / procurement (ตัวอย่าง / sample)","href":"https://www.oae.go.th/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Limited public series; Thai farm-gate coconut is monthly (OAE)","freq_th":"ชุดสาธารณะมีจำกัด; มะพร้าวไทยเป็นรายเดือน (สำนักงานเศรษฐกิจการเกษตร)","src_name":"OAE Thai coconut (related input) + paid index / procurement","src_url":"https://www.oae.go.th/","notes":"Farm-gate coconut (already on the live dashboard) is a related input, not the concentrate. Concentrate remains sample until invoices or a paid series are added.","notes_th":"มะพร้าวเกษตรกร (มีในแดชบอร์ดปัจจุบัน) เป็นวัตถุดิบที่เกี่ยวข้อง ไม่ใช่ตัวน้ำเข้มข้น ราคาน้ำเข้มข้นยังเป็นตัวอย่างจนกว่าจะมีใบแจ้งหนี้หรือดัชนีแบบเสียเงิน","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"coco","group":"concentrate","name":"Thai coconut, large mature (farm-gate, related input)","name_th":"มะพร้าวผลใหญ่ไทย (ราคาเกษตรกร — วัตถุดิบที่เกี่ยวข้อง)","unit":"THB/nut","d":[12.0,12.33,14.31,14.61,16.18,16.18,14.13,13.14,12.68,13.09,15.46,19.37,21.69,22.36,21.32,21.01,20.04,20.54,20.49,19.04,16.73,16.43,16.65,17.93,16.81,15.74,12.96,12.03,10.59,8.31,8.61,6.9,6.1,6.02,6.06,8.27,null],"sample":false,"latest":{"v":10.75,"u":"THB/nut","when":"Nov 2026, first 2 weeks (preliminary; 1,075 baht/100 nuts)","src":"OAE weekly sheet","href":"https://oae.go.th/uploads/files/2026/11/13/8e19fd700d3f9549.pdf"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Monthly (OAE); Nov 2026 is a preliminary 2-week average","freq_th":"รายเดือน (สำนักงานเศรษฐกิจการเกษตร); พ.ย. 2026 เป็นค่าเฉลี่ย 2 สัปดาห์เบื้องต้น","src_name":"OAE / NABC farm-gate coconut","src_url":"https://www.oae.go.th/","notes":"Real series from the live dashboard. Related fruit input, not coconut water concentrate.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน เป็นวัตถุดิบผลไม้ที่เกี่ยวข้อง ไม่ใช่น้ำมะพร้าวเข้มข้น","futures":null,"tag":"Fruits"},{"id":"sugar","group":"ingredient","name":"Raw sugar (ICE No.11 futures)","name_th":"น้ำตาลดิบ (ฟิวเจอร์ส ICE เบอร์ 11)","unit":"US¢/lb","d":[27.31,22.22,22.61,23.36,21.73,20.65,18.82,19.18,19.3,18.42,20.69,22.36,21.65,20.35,18.95,20.17,19.06,18.18,17.44,16.24,16.36,16.39,15.76,15.56,14.6,14.92,14.77,14.22,14.8,14.05,14.77,13.92,14.8,16.83,17.92,20.22,18.36],"sample":false,"latest":{"v":18.17,"u":"US¢/lb","when":"17 Nov 2026 close","src":"FT.com / ICE Sugar No.11 front month","href":"https://markets.ft.com/data/commodities/tearsheet/historical?c=Sugar+%2311"},"method":"Public futures curve (where listed). Months after the last traded contract are a statistical extension, drawn dashed and labelled — not a traded price. Not advice.","method_th":"ใช้เส้นฟิวเจอร์สสาธารณะในช่วงที่มีสัญญาซื้อขาย หากเลยสัญญาสุดท้าย จะต่อด้วยส่วนขยายทางสถิติ (เส้นประ ติดป้ายชัดเจน) ไม่ใช่ราคาซื้อขายจริง ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily (futures); monthly average on the card","freq_th":"รายวัน (ฟิวเจอร์ส); การ์ดแสดงค่าเฉลี่ยรายเดือน","src_name":"FT.com / ICE Sugar No.11 front month","src_url":"https://markets.ft.com/data/commodities/tearsheet/historical?c=Sugar+%2311","notes":"Real series from the live dashboard. Thai domestic factory sugar is an administered price and does not follow ICE day to day.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน น้ำตาลโรงงานในประเทศเป็นราคาที่ทางการกำหนด และไม่ตาม ICE รายวัน","futures":{"labels":["2027-03","2027-05","2027-07","2027-10"],"values":[18.17,17.6,17.24,17.26],"label":"ICE Sugar No.11 settlement, 17 Nov 2026","label_th":"ราคาชำระ ICE Sugar No.11 วันที่ 17 พ.ย. 2026","source":"ICE Sugar No.11 futures (from live dashboard, 17 Nov 2026)"},"tag":"Sugar"},{"id":"wmp","group":"ingredient","name":"Whole milk powder (Global Dairy Trade)","name_th":"นมผงเต็มไขมัน (Global Dairy Trade)","unit":"USD/t","d":[2999,3156,3322,3426,3214,3258,3379,3436,3180,3370,3422,3556,3770,3937,3896,4161,4056,4116,4353,4128,3894,4024,3800,3653,3478,3262,3428,3660,3786,3676,3756,3648,3456,3537,3575,3682,4026],"sample":false,"latest":{"v":4081,"u":"USD/t","when":"GDT event 416, 17 Nov 2026 (WMP +2.7%; overall index 0.0%)","src":"Global Dairy Trade","href":"https://www.globaldairytrade.info/en/product-results/"},"method":"Public futures curve (where listed). Months after the last traded contract are a statistical extension, drawn dashed and labelled — not a traded price. Not advice.","method_th":"ใช้เส้นฟิวเจอร์สสาธารณะในช่วงที่มีสัญญาซื้อขาย หากเลยสัญญาสุดท้าย จะต่อด้วยส่วนขยายทางสถิติ (เส้นประ ติดป้ายชัดเจน) ไม่ใช่ราคาซื้อขายจริง ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Twice monthly (GDT auctions); SGX-NZX futures daily","freq_th":"เดือนละสองครั้ง (ประมูล GDT); ฟิวเจอร์ส SGX-NZX รายวัน","src_name":"Global Dairy Trade (WMP) + SGX-NZX futures for the look-ahead","src_url":"https://www.globaldairytrade.info/","notes":"Real series from the live dashboard. GDT results are free; futures extend the look-ahead.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน ผล GDT ใช้ฟรี ฟิวเจอร์สใช้ต่อยอดการมองไปข้างหน้า","futures":{"labels":["2026-12","2027-01","2027-02","2027-03","2027-04","2027-05"],"values":[4205,4290,4345,4420,4500,4505],"label":"SGX-NZX WMP futures settlement, 17 Nov 2026","label_th":"ราคาชำระฟิวเจอร์ส SGX-NZX WMP วันที่ 17 พ.ย. 2026","source":"SGX-NZX WMP futures (from live dashboard, 17 Nov 2026)"},"tag":"Dairy"},{"id":"smp","group":"ingredient","name":"Skim milk powder","name_th":"นมผงพร่องมันเนย","unit":"USD/t","d":[2715.0,2699.0,2990.0,3043.0,3070.0,3123.0,3082.0,3018.0,3068.0,3020.0,3089.0,3058.0,2878.0,2754.0,2680.0,2517.0,2518.0,2503.0,2584.0,2518.0,2500.0,2541.0,2593.0,2501.0,2614.0,2558.0,2654.0,2634.0,2607.0,2513.0,2511.0,2703.0,2649.0,2773.0,2881.0,2836.0,2927.0],"sample":true,"latest":{"v":2927.0,"u":"USD/t","when":"ตัวอย่าง / sample path — wire a live GDT SMP series in the build","src":"Global Dairy Trade — SMP results are published on the same free platform as WMP (ตัวอย่าง / sample)","href":"https://www.globaldairytrade.info/"},"method":"Public futures curve (where listed). Months after the last traded contract are a statistical extension, drawn dashed and labelled — not a traded price. Not advice.","method_th":"ใช้เส้นฟิวเจอร์สสาธารณะในช่วงที่มีสัญญาซื้อขาย หากเลยสัญญาสุดท้าย จะต่อด้วยส่วนขยายทางสถิติ (เส้นประ ติดป้ายชัดเจน) ไม่ใช่ราคาซื้อขายจริง ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Twice monthly (GDT); futures on SGX-NZX where listed","freq_th":"เดือนละสองครั้ง (GDT); มีฟิวเจอร์สบน SGX-NZX ในสัญญาที่เปิด","src_name":"Global Dairy Trade — SMP results are published on the same free platform as WMP","src_url":"https://www.globaldairytrade.info/","notes":"GDT publishes SMP auction results for free, like WMP. The path on this card is sample so the layout can be reviewed; the live build should use the same GDT feed as WMP.","notes_th":"GDT เผยแพร่ผลประมูล SMP ฟรีเหมือน WMP เส้นบนการ์ดนี้เป็นตัวอย่างเพื่อให้ดูเลย์เอาต์ ในเวอร์ชันจริงควรดึงชุดเดียวกับ WMP","futures":null,"daily":null,"official_latest":false},{"id":"mpc","group":"ingredient","name":"Milk protein concentrate","name_th":"โปรตีนนมเข้มข้น (MPC)","unit":"USD/t","d":[8559.0,8845.0,8693.0,8532.0,8645.0,9055.0,9186.0,8956.0,8807.0,8805.0,9013.0,9009.0,8932.0,8892.0,8951.0,8820.0,8861.0,8963.0,9364.0,9386.0,9631.0,9399.0,9600.0,9637.0,9513.0,9519.0,9753.0,9712.0,10001.0,10424.0,10887.0,11359.0,11034.0,11140.0,10958.0,11212.0,11236.0],"sample":true,"latest":{"v":11236.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"GDT (when listed) / Fonterra and paid dairy reports (ตัวอย่าง / sample)","href":"https://www.globaldairytrade.info/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"partial","feasible":"partial","freq":"Irregular on GDT; otherwise supplier quotes or paid dairy reports","freq_th":"บน GDT ไม่สม่ำเสมอ นอกนั้นใช้ใบเสนอราคาหรือรายงานนมแบบเสียเงิน","src_name":"GDT (when listed) / Fonterra and paid dairy reports","src_url":"https://www.globaldairytrade.info/","notes":"MPC is not as regularly listed on GDT as WMP or SMP. Treat GDT as a partial check and ask procurement to upload contract prices.","notes_th":"MPC ไม่ขึ้นประมูลบน GDT สม่ำเสมอเท่า WMP หรือ SMP ใช้ GDT เป็นการเช็กบางส่วน และให้จัดซื้ออัปโหลดราคาตามสัญญา","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"lactose","group":"ingredient","name":"Lactose","name_th":"แล็กโทส","unit":"USD/t","d":[1266.0,1215.0,1229.0,1220.0,1186.0,1166.0,1148.0,1146.0,1161.0,1201.0,1206.0,1247.0,1262.0,1263.0,1251.0,1209.0,1144.0,1142.0,1137.0,1150.0,1161.0,1106.0,1073.0,1026.0,1056.0,1048.0,1050.0,1017.0,973.0,954.0,951.0,966.0,913.0,919.0,887.0,866.0,851.0],"sample":true,"latest":{"v":851.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"GDT and/or USDA Dairy Market News (lactose) (ตัวอย่าง / sample)","href":"https://www.ams.usda.gov/market-news/dairy"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"partial","feasible":"partial","freq":"GDT when listed; USDA Dairy Market News also publishes lactose","freq_th":"GDT เมื่อมีการประมูล; USDA Dairy Market News ก็เผยแพร่ราคาแล็กโทส","src_name":"GDT and/or USDA Dairy Market News (lactose)","src_url":"https://www.ams.usda.gov/market-news/dairy","notes":"A free USDA series can be wired in the build for a US benchmark. Thai landed cost still needs freight, FX and the actual supplier grade.","notes_th":"ชุด USDA ฟรีสามารถต่อในเวอร์ชันจริงเป็นเกณฑ์สหรัฐฯ ได้ ต้นทุนถึงไทยยังต้องบวกเฟรท อัตราแลกเปลี่ยน และเกรดจากผู้ขายจริง","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"tapioca","group":"ingredient","name":"Tapioca starch (cassava starch)","name_th":"แป้งมันสำปะหลัง","unit":"THB/kg","d":[17.46,16.43,17.15,18.88,19.28,20.22,21.19,21.84,22.44,23.22,22.9,21.59,20.25,20.63,20.93,20.98,19.52,19.5,19.57,19.0,18.52,19.75,20.5,20.9,20.98,20.6,20.36,20.89,20.43,20.41,21.62,20.78,20.25,21.36,21.5,21.48,20.77],"sample":true,"latest":{"v":20.77,"u":"THB/kg","when":"ตัวอย่าง / sample path — wire the official Thai table in the build","src":"OAE cassava / TTTA tapioca starch (public Thai sources — confirm the exact table in the build) (ตัวอย่าง / sample)","href":"https://www.oae.go.th/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"partial","freq":"Typically weekly or monthly (OAE / Thai Tapioca Trade Association)","freq_th":"โดยทั่วไปรายสัปดาห์หรือรายเดือน (สำนักงานเศรษฐกิจการเกษตร / สมาคมแป้งมันสำปะหลังไทย)","src_name":"OAE cassava / TTTA tapioca starch (public Thai sources — confirm the exact table in the build)","src_url":"https://www.oae.go.th/","notes":"A free official Thai series is expected to be feasible (OAE and/or TTTA). This card is sample until that table is wired. Seasonal (crop year) effects are material.","notes_th":"คาดว่าใช้ชุดทางการไทยฟรีได้ (สำนักงานเศรษฐกิจการเกษตร และ/หรือ สมาคมแป้งมันสำปะหลังไทย) การ์ดนี้เป็นตัวอย่างจนกว่าจะต่อตารางนั้น ฤดูกาลตามปีเพาะปลูกมีผลชัด","futures":null,"daily":null,"official_latest":false},{"id":"citric","group":"ingredient","name":"Citric acid","name_th":"กรดมะนาว (ซิตริกแอซิด)","unit":"USD/t","d":[763.0,809.0,820.0,799.0,830.0,795.0,870.0,892.0,888.0,916.0,869.0,886.0,921.0,958.0,978.0,935.0,949.0,897.0,906.0,884.0,857.0,884.0,956.0,1015.0,999.0,982.0,944.0,923.0,930.0,950.0,935.0,937.0,893.0,873.0,919.0,969.0,989.0],"sample":true,"latest":{"v":989.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live quote","src":"ICIS / ChemAnalyst / similar paid chem markets — no free public spot series found (ตัวอย่าง / sample)","href":"https://www.icis.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Weekly paid chem reports, or procurement invoices","freq_th":"รายงานเคมีแบบเสียเงินรายสัปดาห์ หรือใบแจ้งหนี้จัดซื้อ","src_name":"ICIS / ChemAnalyst / similar paid chem markets — no free public spot series found","src_url":"https://www.icis.com/","notes":"China-origin export prices sometimes appear in customs unit values, but that is a rough check only. Practical feed: paid index or procurement upload.","notes_th":"ราคาส่งออกจากจีนบางครั้งปรากฏในมูลค่าต่อหน่วยของศุลกากร แต่เป็นการเช็กคร่าวเท่านั้น แหล่งที่ใช้ได้จริงคือดัชนีแบบเสียเงินหรืออัปโหลดจากจัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"ascorbic","group":"ingredient","name":"Ascorbic acid (vitamin C)","name_th":"กรดแอสคอร์บิก (วิตามินซี)","unit":"USD/kg","d":[4.59,4.45,4.52,4.79,5.15,5.3,5.31,5.25,5.13,4.88,4.51,4.13,4.31,4.29,4.48,4.19,4.24,4.24,4.37,4.32,4.5,4.7,4.97,4.49,4.23,4.5,5.02,5.14,5.07,5.35,5.41,5.46,5.8,5.81,5.35,5.18,5.32],"sample":true,"latest":{"v":5.32,"u":"USD/kg","when":"ตัวอย่าง / sample — not a live quote","src":"ICIS / similar paid chem markets — no free public spot series found (ตัวอย่าง / sample)","href":"https://www.icis.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Weekly paid chem reports, or procurement invoices","freq_th":"รายงานเคมีแบบเสียเงินรายสัปดาห์ หรือใบแจ้งหนี้จัดซื้อ","src_name":"ICIS / similar paid chem markets — no free public spot series found","src_url":"https://www.icis.com/","notes":"Same constraint as citric acid. Ask procurement to send the invoice or contract price if a paid feed is not approved.","notes_th":"ข้อจำกัดเดียวกับกรดมะนาว หากยังไม่อนุมัติฟีดแบบเสียเงิน ให้จัดซื้อส่งราคาตามใบแจ้งหนี้หรือสัญญา","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"nascorbate","group":"ingredient","name":"Sodium ascorbate","name_th":"โซเดียมแอสคอร์เบต","unit":"USD/kg","d":[4.13,3.92,4.02,4.0,4.28,4.41,4.33,4.48,4.53,4.42,4.59,4.46,4.82,5.0,4.93,4.9,5.08,4.79,4.78,4.51,4.53,4.53,4.78,4.73,4.72,4.97,4.82,5.06,5.0,4.77,4.94,5.05,4.95,5.25,5.58,5.41,5.27],"sample":true,"latest":{"v":5.27,"u":"USD/kg","when":"ตัวอย่าง / sample — not a live quote","src":"ICIS / similar paid chem markets — no free public spot series found (ตัวอย่าง / sample)","href":"https://www.icis.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"no","freq":"Weekly paid chem reports, or procurement invoices","freq_th":"รายงานเคมีแบบเสียเงินรายสัปดาห์ หรือใบแจ้งหนี้จัดซื้อ","src_name":"ICIS / similar paid chem markets — no free public spot series found","src_url":"https://www.icis.com/","notes":"Often moves with ascorbic acid but is a different product. Keep it as its own line; do not copy ascorbic prices across.","notes_th":"มักเคลื่อนตามกรดแอสคอร์บิก แต่เป็นคนละสินค้า แยกบรรทัดไว้ อย่าคัดลอกราคากรดแอสคอร์บิกมาใส่","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"tin","group":"packaging","name":"Tin, LME cash (tinplate cans)","name_th":"ดีบุก ราคา LME เงินสด (กระป๋องเคลือบดีบุก)","unit":"USD/t","d":[24221.0,24606.0,25211.0,26157.0,27446.0,31845.0,33153.0,32229.0,32004.0,31512.0,31644.0,32217.0,29768.0,28878.0,29618.0,31876.0,34026.0,32691.0,32144.0,32475.0,33693.0,33870.0,34540.0,36046.0,37016.0,41352.0,49904.0,48675.0,47515.0,48942.0,53687.0,53358.0,53102.0,55654.0,53878.0,51980.0,47363.0],"sample":false,"latest":{"v":46650,"u":"USD/t","when":"17 Nov 2026 LME cash settlement","src":"Westmetall LME table","href":"https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Sn_cash"},"method":"LME cash vs 3-month official prices, plus a published annual outlook (World Bank) as a checkpoint. Band is residual variation, not a traded curve. Not advice.","method_th":"ราคา cash เทียบ 3 เดือนของ LME และแนวโน้มรายปีที่เผยแพร่ (ธนาคารโลก) เป็นจุดตรวจ แถบคือความผันผวนที่เหลือ ไม่ใช่เส้นซื้อขาย ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily (LME); monthly average on the card","freq_th":"รายวัน (LME); การ์ดแสดงค่าเฉลี่ยรายเดือน","src_name":"Westmetall / LME cash settlement","src_url":"https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Tin_cash","notes":"Real series from the live dashboard.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน","futures":null,"tag":"Tin"},{"id":"alum","group":"packaging","name":"Aluminium, LME cash (cans)","name_th":"อะลูมิเนียม ราคา LME เงินสด (กระป๋อง)","unit":"USD/t","d":[2202.0,2174.0,2194.0,2183.0,2222.0,2498.0,2565.0,2495.0,2362.0,2334.0,2452.0,2598.0,2583.0,2538.0,2575.0,2653.0,2657.0,2381.0,2442.0,2516.0,2604.0,2594.0,2653.0,2786.0,2823.0,2875.0,3148.0,3065.0,3370.0,3601.0,3670.0,3459.0,3156.0,3250.0,3277.0,3061.0,3150.0],"sample":false,"latest":{"dec":1,"v":3060.5,"u":"USD/t","when":"17 Nov 2026 LME cash settlement (16 Nov: 3,332)","src":"Westmetall LME table","href":"https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Al_cash"},"method":"LME cash vs 3-month official prices, plus a published annual outlook (World Bank) as a checkpoint. Band is residual variation, not a traded curve. Not advice.","method_th":"ราคา cash เทียบ 3 เดือนของ LME และแนวโน้มรายปีที่เผยแพร่ (ธนาคารโลก) เป็นจุดตรวจ แถบคือความผันผวนที่เหลือ ไม่ใช่เส้นซื้อขาย ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily (LME); monthly average on the card","freq_th":"รายวัน (LME); การ์ดแสดงค่าเฉลี่ยรายเดือน","src_name":"Westmetall / LME cash settlement","src_url":"https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Al_cash","notes":"Real series from the live dashboard.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน","futures":null,"tag":"Aluminium"},{"id":"hdpe","group":"packaging","name":"HDPE resin","name_th":"เม็ดพลาสติก HDPE","unit":"USD/t","d":[1093.0,1093.0,1053.0,1083.0,1094.0,1107.0,1114.0,1170.0,1203.0,1249.0,1235.0,1215.0,1174.0,1163.0,1063.0,1118.0,1125.0,1129.0,1162.0,1149.0,1158.0,1185.0,1124.0,1184.0,1188.0,1210.0,1170.0,1147.0,1211.0,1192.0,1178.0,1197.0,1251.0,1153.0,1205.0,1214.0,1247.0],"sample":true,"latest":{"v":1247.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai contract price","src":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (ICIS, ChemOrbis, Plastics Exchange); US PPI is a free direction proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (ICIS, ChemOrbis, Plastics Exchange); US PPI เป็นตัวแทนทิศทางฟรี","src_name":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy","src_url":"https://fred.stlouisfed.org/","notes":"Thai baht contract prices for blow-moulding / bottle grade are not on a free public feed. The live dashboard already uses US PPI as a direction proxy (not a price level). For lock decisions, use a paid Asian assessment or procurement invoices.","notes_th":"ราคาตามสัญญาเป็นบาทสำหรับ blow-moulding / bottle grade ไม่มีในฟีดสาธารณะฟรี แดชบอร์ดปัจจุบันใช้ US PPI เป็นตัวแทนทิศทาง (ไม่ใช่ระดับราคา) หากจะล็อคราคา ใช้การประเมินเอเชียแบบเสียเงินหรือใบแจ้งหนี้จัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pet","group":"packaging","name":"PET resin","name_th":"เม็ดพลาสติก PET","unit":"USD/t","d":[1006.0,1014.0,994.0,1051.0,1006.0,1008.0,1037.0,1058.0,1078.0,1047.0,1102.0,1079.0,1076.0,1076.0,1077.0,1062.0,1112.0,1116.0,1151.0,1101.0,1120.0,1113.0,1126.0,1132.0,1145.0,1142.0,1145.0,1152.0,1162.0,1167.0,1157.0,1173.0,1146.0,1213.0,1242.0,1296.0,1290.0],"sample":true,"latest":{"v":1290.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai contract price","src":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (ICIS, ChemOrbis, Plastics Exchange); US PPI is a free direction proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (ICIS, ChemOrbis, Plastics Exchange); US PPI เป็นตัวแทนทิศทางฟรี","src_name":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy","src_url":"https://fred.stlouisfed.org/","notes":"Thai baht contract prices for bottle-grade PET are not on a free public feed. The live dashboard already uses US PPI as a direction proxy (not a price level). For lock decisions, use a paid Asian assessment or procurement invoices.","notes_th":"ราคาตามสัญญาเป็นบาทสำหรับ bottle-grade PET ไม่มีในฟีดสาธารณะฟรี แดชบอร์ดปัจจุบันใช้ US PPI เป็นตัวแทนทิศทาง (ไม่ใช่ระดับราคา) หากจะล็อคราคา ใช้การประเมินเอเชียแบบเสียเงินหรือใบแจ้งหนี้จัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pp","group":"packaging","name":"PP resin","name_th":"เม็ดพลาสติก PP","unit":"USD/t","d":[1075.0,1055.0,1065.0,1043.0,1006.0,956.0,973.0,964.0,940.0,908.0,836.0,833.0,805.0,800.0,832.0,820.0,814.0,836.0,829.0,830.0,798.0,773.0,732.0,749.0,774.0,760.0,756.0,746.0,806.0,831.0,828.0,846.0,879.0,852.0,867.0,881.0,881.0],"sample":true,"latest":{"v":881.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai contract price","src":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (ICIS, ChemOrbis, Plastics Exchange); US PPI is a free direction proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (ICIS, ChemOrbis, Plastics Exchange); US PPI เป็นตัวแทนทิศทางฟรี","src_name":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy","src_url":"https://fred.stlouisfed.org/","notes":"Thai baht contract prices for polypropylene are not on a free public feed. The live dashboard already uses US PPI as a direction proxy (not a price level). For lock decisions, use a paid Asian assessment or procurement invoices.","notes_th":"ราคาตามสัญญาเป็นบาทสำหรับ polypropylene ไม่มีในฟีดสาธารณะฟรี แดชบอร์ดปัจจุบันใช้ US PPI เป็นตัวแทนทิศทาง (ไม่ใช่ระดับราคา) หากจะล็อคราคา ใช้การประเมินเอเชียแบบเสียเงินหรือใบแจ้งหนี้จัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pe","group":"packaging","name":"PE resin (LDPE / LLDPE film)","name_th":"เม็ดพลาสติก PE (LDPE / LLDPE เกรดฟิล์ม)","unit":"USD/t","d":[1017.0,1009.0,1045.0,990.0,1012.0,994.0,1025.0,1016.0,1011.0,1023.0,1004.0,1001.0,993.0,1033.0,1041.0,991.0,1001.0,1008.0,1009.0,1048.0,1078.0,1027.0,1064.0,1045.0,1026.0,1006.0,998.0,1017.0,978.0,971.0,946.0,935.0,916.0,925.0,938.0,902.0,900.0],"sample":true,"latest":{"v":900.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai contract price","src":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (ICIS, ChemOrbis, Plastics Exchange); US PPI is a free direction proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (ICIS, ChemOrbis, Plastics Exchange); US PPI เป็นตัวแทนทิศทางฟรี","src_name":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy","src_url":"https://fred.stlouisfed.org/","notes":"Thai baht contract prices for film-grade PE, kept separate from HDPE are not on a free public feed. The live dashboard already uses US PPI as a direction proxy (not a price level). For lock decisions, use a paid Asian assessment or procurement invoices.","notes_th":"ราคาตามสัญญาเป็นบาทสำหรับ film-grade PE, kept separate from HDPE ไม่มีในฟีดสาธารณะฟรี แดชบอร์ดปัจจุบันใช้ US PPI เป็นตัวแทนทิศทาง (ไม่ใช่ระดับราคา) หากจะล็อคราคา ใช้การประเมินเอเชียแบบเสียเงินหรือใบแจ้งหนี้จัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"pvc","group":"packaging","name":"PVC resin","name_th":"เม็ดพลาสติก PVC","unit":"USD/t","d":[873.0,861.0,860.0,818.0,807.0,860.0,828.0,815.0,816.0,769.0,765.0,782.0,775.0,749.0,749.0,732.0,736.0,736.0,734.0,717.0,744.0,748.0,760.0,763.0,757.0,766.0,770.0,777.0,783.0,777.0,782.0,790.0,811.0,796.0,818.0,768.0,747.0],"sample":true,"latest":{"v":747.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai contract price","src":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (ICIS, ChemOrbis, Plastics Exchange); US PPI is a free direction proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (ICIS, ChemOrbis, Plastics Exchange); US PPI เป็นตัวแทนทิศทางฟรี","src_name":"Paid Asian/Thai resin assessments; US PPI (FRED/BLS) as a free direction-only proxy","src_url":"https://fred.stlouisfed.org/","notes":"Thai baht contract prices for suspension PVC are not on a free public feed. The live dashboard already uses US PPI as a direction proxy (not a price level). For lock decisions, use a paid Asian assessment or procurement invoices.","notes_th":"ราคาตามสัญญาเป็นบาทสำหรับ suspension PVC ไม่มีในฟีดสาธารณะฟรี แดชบอร์ดปัจจุบันใช้ US PPI เป็นตัวแทนทิศทาง (ไม่ใช่ระดับราคา) หากจะล็อคราคา ใช้การประเมินเอเชียแบบเสียเงินหรือใบแจ้งหนี้จัดซื้อ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"kraft","group":"packaging","name":"Kraft linerboard (carton-box driver)","name_th":"กระดาษคราฟต์ไลเนอร์ (ตัวขับราคาลังกระดาษ)","unit":"USD/t","d":[607.0,645.0,680.0,671.0,681.0,649.0,673.0,674.0,674.0,701.0,679.0,686.0,663.0,656.0,678.0,636.0,622.0,646.0,660.0,650.0,664.0,677.0,677.0,655.0,664.0,687.0,671.0,703.0,716.0,738.0,700.0,734.0,758.0,787.0,769.0,776.0,781.0],"sample":true,"latest":{"v":781.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai mill price","src":"Paid containerboard assessments; FRED/BLS PPI paperboard as direction proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (Fastmarkets / RISI); US PPI paperboard is a free proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (Fastmarkets / RISI); US PPI กระดาษลังเป็นตัวแทนฟรี","src_name":"Paid containerboard assessments; FRED/BLS PPI paperboard as direction proxy","src_url":"https://fred.stlouisfed.org/","notes":"Primary driver of carton-box costs, together with corrugating medium. See the note on this tab.","notes_th":"ตัวขับหลักของต้นทุนลังกระดาษ คู่กับกระดาษลูกฟูก ดูคำอธิบายในแท็บนี้","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"medium","group":"packaging","name":"Corrugating medium (carton-box driver)","name_th":"กระดาษลูกฟูก / กระดาษกลาง (ตัวขับราคาลังกระดาษ)","unit":"USD/t","d":[541.0,535.0,516.0,500.0,509.0,497.0,490.0,482.0,476.0,475.0,467.0,451.0,448.0,458.0,457.0,446.0,475.0,469.0,472.0,468.0,477.0,481.0,468.0,481.0,487.0,472.0,462.0,451.0,466.0,470.0,474.0,487.0,504.0,505.0,508.0,504.0,500.0],"sample":true,"latest":{"v":500.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a Thai mill price","src":"Paid containerboard assessments; FRED/BLS PPI as direction proxy (ตัวอย่าง / sample)","href":"https://fred.stlouisfed.org/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (Fastmarkets / RISI); US PPI as a free proxy","freq_th":"รายสัปดาห์แบบเสียเงิน (Fastmarkets / RISI); US PPI เป็นตัวแทนฟรี","src_name":"Paid containerboard assessments; FRED/BLS PPI as direction proxy","src_url":"https://fred.stlouisfed.org/","notes":"Moves closely with kraft liner and OCC. Second series to watch for carton boxes.","notes_th":"เคลื่อนใกล้กับคราฟต์ไลเนอร์และ OCC เป็นชุดที่สองที่ควรดูสำหรับลังกระดาษ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"occ","group":"packaging","name":"OCC — old corrugated cartons (recycled paper)","name_th":"OCC — กล่องลูกฟูกเก่า (กระดาษรีไซเคิล)","unit":"USD/t","d":[170.0,164.0,164.0,161.0,160.0,155.0,152.0,150.0,147.0,151.0,146.0,154.0,138.0,140.0,136.0,135.0,130.0,126.0,131.0,136.0,141.0,141.0,132.0,130.0,137.0,135.0,141.0,142.0,142.0,152.0,155.0,153.0,154.0,149.0,151.0,156.0,151.0],"sample":true,"latest":{"v":151.0,"u":"USD/t","when":"ตัวอย่าง / sample for the international grade; see Scrap for Wongpanit","src":"Paid OCC assessments; Wongpanit cardboard buy-in as a free Thai check (Scrap tab) (ตัวอย่าง / sample)","href":"https://wongpanit.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"partial","feasible":"partial","freq":"Weekly paid (Fastmarkets); Thai scrap cardboard on Wongpanit is a free local check","freq_th":"รายสัปดาห์แบบเสียเงิน (Fastmarkets); กระดาษกล่องวงษ์พาณิชย์เป็นตัวเช็กในประเทศฟรี","src_name":"Paid OCC assessments; Wongpanit cardboard buy-in as a free Thai check (Scrap tab)","src_url":"https://wongpanit.com/","notes":"OCC is the main recycled-paper input into kraft liner and medium. International OCC is usually paid; the Scrap tab shows Wongpanit’s Thai cardboard buy-in price as a local indicator.","notes_th":"OCC คือวัตถุดิบกระดาษรีไซเคิลหลักของคราฟต์ไลเนอร์และกระดาษลูกฟูก ราคา OCC ตลาดโลกมักเป็นแบบเสียเงิน แท็บของเก่าแสดงราคารับซื้อกระดาษกล่องของวงษ์พาณิชย์เป็นตัวชี้ในประเทศ","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"nbsk","group":"packaging","name":"Softwood pulp (NBSK)","name_th":"เยื่อไม้เนื้ออ่อน (NBSK)","unit":"USD/t","d":[986.0,1013.0,1024.0,1053.0,1013.0,998.0,998.0,1027.0,1052.0,1103.0,1083.0,1146.0,1148.0,1149.0,1117.0,1134.0,1137.0,1070.0,1045.0,1044.0,1036.0,1002.0,999.0,1024.0,1070.0,1070.0,1089.0,1096.0,1064.0,1036.0,1005.0,977.0,999.0,930.0,955.0,948.0,938.0],"sample":true,"latest":{"v":938.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live PIX quote","src":"FOEX PIX NBSK or Fastmarkets — paid; no free official spot series used here (ตัวอย่าง / sample)","href":"https://www.fastmarkets.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (FOEX PIX / Fastmarkets)","freq_th":"รายสัปดาห์แบบเสียเงิน (FOEX PIX / Fastmarkets)","src_name":"FOEX PIX NBSK or Fastmarkets — paid; no free official spot series used here","src_url":"https://www.fastmarkets.com/","notes":"Secondary check for carton boxes. Virgin pulp matters more for some kraft grades and imported liner than for a typical recycled carton.","notes_th":"จุดตรวจรองสำหรับลังกระดาษ เยื่อบริสุทธิ์สำคัญกับคราฟต์บางเกรดและไลเนอร์นำเข้า มากกว่าลังรีไซเคิลทั่วไป","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"bhkp","group":"packaging","name":"Hardwood pulp (BHKP)","name_th":"เยื่อไม้เนื้อแข็ง (BHKP)","unit":"USD/t","d":[778.0,789.0,807.0,811.0,845.0,838.0,854.0,871.0,890.0,871.0,920.0,929.0,953.0,980.0,958.0,938.0,955.0,953.0,944.0,937.0,951.0,947.0,896.0,890.0,898.0,889.0,923.0,890.0,874.0,913.0,917.0,932.0,944.0,962.0,975.0,946.0,1001.0],"sample":true,"latest":{"v":1001.0,"u":"USD/t","when":"ตัวอย่าง / sample — not a live PIX quote","src":"FOEX PIX BHKP or Fastmarkets — paid (ตัวอย่าง / sample)","href":"https://www.fastmarkets.com/"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"paid","feasible":"partial","freq":"Weekly paid (FOEX PIX / Fastmarkets)","freq_th":"รายสัปดาห์แบบเสียเงิน (FOEX PIX / Fastmarkets)","src_name":"FOEX PIX BHKP or Fastmarkets — paid","src_url":"https://www.fastmarkets.com/","notes":"Secondary check, with NBSK. Carton-box prices usually track containerboard and OCC first.","notes_th":"จุดตรวจรอง คู่กับ NBSK ราคาลังกระดาษมักตามคอนเทนเนอร์บอร์ดและ OCC เป็นหลัก","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"freight","group":"packaging","name":"Sea freight (container, composite)","name_th":"ค่าเรือทะเล (คอนเทนเนอร์, ดัชนีรวม)","unit":"USD / 40ft","d":[3097.0,3193.0,3417.0,3827.0,3544.0,3417.0,3250.0,3205.0,3187.0,2942.0,2992.0,2730.0,2823.0,2672.0,2733.0,2825.0,2827.0,2747.0,2637.0,2469.0,2719.0,2826.0,3159.0,3235.0,3307.0,3195.0,3159.0,2872.0,3073.0,3291.0,3624.0,3981.0,3744.0,3166.0,3322.0,3377.0,3174.0],"sample":true,"latest":{"v":3174.0,"u":"USD / 40ft","when":"ตัวอย่าง / sample path — latest composite should be read from FBX / WCI / SCFI","src":"Freightos FBX (current) · Drewry World Container Index · Shanghai SCFI (ตัวอย่าง / sample)","href":"https://www.freightos.com/enterprise/terminal/freightos-baltic-index-global-container-pricing-index/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"partial","feasible":"partial","freq":"FBX daily (current view free; history/export often paid). Drewry WCI weekly (free after registration). SCFI weekly (latest composite delayed for non-subscribers).","freq_th":"FBX รายวัน (ดูค่าล่าสุดฟรี; ประวัติ/ส่งออกมักเสียเงิน) Drewry WCI รายสัปดาห์ (ฟรีหลังลงทะเบียน) SCFI รายสัปดาห์ (ค่าดัชนีรวมล่าสุดล่าช้าสำหรับผู้ไม่ได้สมัคร)","src_name":"Freightos FBX (current) · Drewry World Container Index · Shanghai SCFI","src_url":"https://www.freightos.com/enterprise/terminal/freightos-baltic-index-global-container-pricing-index/","notes":"Use this as a landed-cost driver for imported concentrates, resin and paper, not as a packaging material. Licensing limits how much history we can republish; the build should link the official page and store only what the licence allows. A China–Thailand or intra-Asia lane is more relevant to Malee than the global composite — confirm the lane in the build.","notes_th":"ใช้เป็นตัวขับต้นทุนถึงคลังของน้ำเข้มข้น เม็ดพลาสติก และกระดาษนำเข้า ไม่ใช่วัตถุดิบบรรจุภัณฑ์เอง ใบอนุญาตจำกัดการนำประวัติมาแสดง เวอร์ชันจริงควรลิงก์หน้าทางการและเก็บเท่าที่สัญญาอนุญาต เส้นทางจีน–ไทยหรือในเอเชียเกี่ยวข้องกับมาลีมากกว่าดัชนีโลก — ยืนยันเลนในเวอร์ชันจริง","futures":null,"daily":null,"official_latest":false,"needs_upload":true},{"id":"brent","group":"energy","name":"Brent crude oil (spot)","name_th":"น้ำมันดิบเบรนต์ (ราคาตลาด)","unit":"USD/bbl","d":[82.94,77.63,80.12,83.48,85.41,89.94,81.75,82.25,85.15,80.36,74.02,75.63,74.35,73.86,79.27,75.44,72.73,68.13,64.45,71.44,71.04,67.87,67.99,64.54,63.8,62.54,66.6,70.89,103.13,117.29,107.14,85.4,83.76,91.08,114.16,123.93,96.92],"sample":false,"latest":{"v":92.85,"u":"USD/bbl","when":"18 Nov 2026, morning Asia trade","src":"Economic Times (Brent futures)","href":"https://economictimes.indiatimes.com/markets/commodities/news/oil-price-today-november-18-brent-crude-drops-below-93-as-traders-weigh-supply-surplus-and-fresh-attacks-what-are-experts-saying/articleshow/135945687.cms"},"method":"Public futures curve (where listed). Months after the last traded contract are a statistical extension, drawn dashed and labelled — not a traded price. Not advice.","method_th":"ใช้เส้นฟิวเจอร์สสาธารณะในช่วงที่มีสัญญาซื้อขาย หากเลยสัญญาสุดท้าย จะต่อด้วยส่วนขยายทางสถิติ (เส้นประ ติดป้ายชัดเจน) ไม่ใช่ราคาซื้อขายจริง ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily (ICE / EIA); monthly average on the card","freq_th":"รายวัน (ICE / EIA); การ์ดแสดงค่าเฉลี่ยรายเดือน","src_name":"ICE Brent / EIA / World Bank Pink Sheet","src_url":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm","notes":"Real monthly series from the live dashboard. Daily path on the Day view is sample for layout (centred on the 18 Nov 2026 morning Asia figure of 92.85 USD/bbl).","notes_th":"ชุดรายเดือนจริงจากแดชบอร์ดปัจจุบัน เส้นรายวันในมุมมองรายวันเป็นตัวอย่างเพื่อเลย์เอาต์ (อิงราคาเช้าเอเชีย 18 พ.ย. 2026 ที่ 92.85 ดอลลาร์/บาร์เรล)","futures":{"labels":["2027-01","2027-02","2027-03","2027-04","2027-05","2027-06"],"values":[93.14,90.37,88.08,86.17,84.57,83.16],"label":"ICE Brent settlement, 17 Nov 2026","label_th":"ราคาชำระ ICE Brent วันที่ 17 พ.ย. 2026","source":"ICE Brent futures (from live dashboard, 17 Nov 2026)"},"tag":"Brent","daily":{"labels":["2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01","2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-07","2026-11-08","2026-11-09","2026-11-10","2026-11-11","2026-11-12","2026-11-13","2026-11-14","2026-11-15","2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22","2026-11-23"],"d":[92.49,93.2,92.34,92.69,93.0,92.31,94.06,94.86,94.51,93.53,93.9,94.81,94.34,93.9,94.93,96.07,96.09,97.34,98.63,96.37,97.27,96.6,96.97,98.93,98.87,101.68,101.68,103.16,101.35,99.84,99.18,98.99,98.11,99.6,99.8,100.25,100.12,99.71,98.62,97.41,98.33,96.93,95.95,94.98,95.44,94.95,94.47,94.74,94.58,94.84,94.42,96.53,99.75,99.31,98.61,98.33,97.54,97.37,96.53,96.2,96.53,95.99,95.74,94.78,94.58,94.44,93.77,93.73,93.32,93.68,93.36,92.87,92.92,93.32,92.66,93.58,94.69,95.2,93.98,92.98,91.97,92.64,92.25,94.24,95.45,94.85,93.5,93.9,93.45,92.85],"sample":true},"yearly":{"labels":["2023","2024","2025","2026"],"d":[80.28,80.53,69.1,96.39]}},{"id":"diesel","group":"energy","name":"Thai retail diesel B7 (Bangkok)","name_th":"ดีเซล B7 ขายปลีกไทย (กรุงเทพฯ)","unit":"THB/litre","d":[29.96,null,29.98,29.98,29.99,30.61,31.71,32.98,32.98,32.97,32.97,32.98,32.96,32.92,32.94,32.94,32.88,31.99,31.94,31.94,31.94,31.94,31.94,31.31,30.94,30.81,30.07,29.94,32.12,44.13,41.13,39.25,36.05,37.59,40.26,null,null],"sample":false,"latest":{"v":39.99,"u":"THB/litre","when":"from 18 Nov 2026 (cut 0.80 baht)","src":"EPPO retail price today","href":"https://www.eppo.go.th/index.php/en/en-energystatistics/petroleumprice-statistic"},"method":"Administered or policy-set price: no futures curve. The chart shows a scenario band (hold / follow oil with a lag / policy shock). Procurement and Oil Fund or ERC decisions matter more than the model. Not advice.","method_th":"ราคาที่ทางการกำหนด ไม่มีเส้นฟิวเจอร์ส กราฟแสดงแถบฉากทัศน์ (ทรงตัว / ตามราคาน้ำมันแบบมีดีเลย์ / ช็อกจากนโยบาย) การตัดสินใจของจัดซื้อ กองทุนน้ำมัน หรือ กกพ. สำคัญกว่าโมเดล ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily official (EPPO retail table); also weekly and monthly statistical tables","freq_th":"รายวันทางการ (ตารางราคาขายปลีก สนพ.); มีตารางรายสัปดาห์และรายเดือนด้วย","src_name":"EPPO — retail petroleum prices (Bangkok & vicinities)","src_url":"https://www.eppo.go.th/data-energy-statistic/energy-price-th/%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2%E0%B8%82%E0%B8%B2%E0%B8%A2%E0%B8%9B%E0%B8%A5%E0%B8%B5%E0%B8%81%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%A1%E0%B8%B1%E0%B8%99/","notes":"Real monthly series from the live dashboard (latest 39.99 THB/litre from 18 Nov 2026). Daily path on the Day view is sample for layout; the official daily table is free on EPPO. Pump prices also depend on the Oil Fund levy.","notes_th":"ชุดรายเดือนจริงจากแดชบอร์ดปัจจุบัน (ล่าสุด 39.99 บาท/ลิตร ตั้งแต่ 18 พ.ย. 2026) เส้นรายวันเป็นตัวอย่างเพื่อเลย์เอาต์ ตารางรายวันทางการใช้ฟรีที่ สนพ. ราคาปั๊มยังขึ้นกับกองทุนน้ำมัน","futures":null,"tag":"Diesel","daily":{"labels":["2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01","2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-07","2026-11-08","2026-11-09","2026-11-10","2026-11-11","2026-11-12","2026-11-13","2026-11-14","2026-11-15","2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22","2026-11-23"],"d":[39.42,39.32,39.52,39.97,39.99,40.25,39.71,39.7,39.81,39.91,39.94,40.18,40.22,40.03,40.25,40.26,40.11,40.18,40.31,40.54,40.58,40.62,40.7,40.84,40.72,41.15,41.0,40.94,40.83,40.9,41.0,40.98,40.79,40.78,40.81,40.71,40.84,40.96,41.01,40.96,41.12,40.91,40.92,41.0,40.89,41.0,41.08,41.13,41.34,41.19,41.22,41.44,41.6,41.43,41.27,41.18,40.87,40.97,40.99,40.74,40.79,40.59,40.59,40.54,40.66,40.98,40.65,40.47,40.47,40.62,40.78,40.83,41.06,41.02,41.21,41.3,41.19,41.05,41.02,40.69,40.72,40.3,40.32,40.17,40.27,40.15,40.0,39.94,39.82,39.99],"sample":true},"yearly":{"labels":["2023","2024","2025","2026"],"d":[29.96,31.92,31.96,36.73]}},{"id":"foa","group":"energy","name":"Fuel oil A (น้ำมันเตา A)","name_th":"น้ำมันเตา A","unit":"THB/litre","d":[24.17,24.71,25.19,26.02,26.15,26.88,27.42,27.21,28.07,27.85,27.05,26.75,26.26,25.97,26.5,26.52,27.61,27.57,28.05,28.16,27.14,27.24,27.51,28.13,27.41,28.08,28.94,28.53,28.93,29.92,28.93,29.39,28.13,28.32,29.31,29.14,29.58],"sample":true,"latest":{"v":29.58,"u":"THB/litre","when":"ตัวอย่าง / sample level for layout — wire the official fuel-oil grade in the build","src":"EPPO petroleum price statistics / oil & LPG price structure; DOEB; PTT wholesale if needed (ตัวอย่าง / sample)","href":"https://www.eppo.go.th/energy-statistics/petroleum-price-statistic/"},"method":"Administered or policy-set price: no futures curve. The chart shows a scenario band (hold / follow oil with a lag / policy shock). Procurement and Oil Fund or ERC decisions matter more than the model. Not advice.","method_th":"ราคาที่ทางการกำหนด ไม่มีเส้นฟิวเจอร์ส กราฟแสดงแถบฉากทัศน์ (ทรงตัว / ตามราคาน้ำมันแบบมีดีเลย์ / ช็อกจากนโยบาย) การตัดสินใจของจัดซื้อ กองทุนน้ำมัน หรือ กกพ. สำคัญกว่าโมเดล ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"EPPO publishes weekly and monthly petroleum-product prices including fuel oil; confirm grade A on the table. Daily official quotes may be in the price-structure PDFs or may need PTT / procurement.","freq_th":"สนพ. เผยแพร่ราคาน้ำมันเชื้อเพลิงรายสัปดาห์และรายเดือน รวมน้ำมันเตา — ต้องยืนยันว่าเกรด A อยู่ในตาราง ราคารายวันอาจอยู่ในไฟล์โครงสร้างราคา หรือต้องใช้ราคา ปตท. / จัดซื้อ","src_name":"EPPO petroleum price statistics / oil & LPG price structure; DOEB; PTT wholesale if needed","src_url":"https://www.eppo.go.th/energy-statistics/petroleum-price-statistic/","notes":"A free public Thai series is expected (EPPO). Confirm that 'น้ำมันเตา A' matches the exact grade Malee buys (industrial fuel oil A vs other fuel-oil grades). If the contract grade is not in the EPPO table, procurement can upload the daily invoice price. Day view below is sample.","notes_th":"คาดว่ามีชุดทางการไทยฟรี (สนพ.) ยืนยันว่า «น้ำมันเตา A» ตรงเกรดที่มาลีซื้อ หากเกรดตามสัญญาไม่อยู่ในตาราง สนพ. ให้จัดซื้ออัปโหลดราคารายวันจากใบแจ้งหนี้ มุมมองรายวันด้านล่างเป็นตัวอย่าง","futures":null,"daily":{"labels":["2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01","2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-07","2026-11-08","2026-11-09","2026-11-10","2026-11-11","2026-11-12","2026-11-13","2026-11-14","2026-11-15","2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22","2026-11-23"],"d":[28.14,28.31,28.39,28.52,28.51,28.38,28.34,28.33,28.11,27.8,27.58,27.54,27.42,27.28,27.41,27.38,27.29,27.34,27.2,27.21,27.15,27.14,27.16,27.07,27.13,27.07,27.15,27.26,27.11,27.02,27.14,27.27,27.57,27.72,27.62,27.81,28.1,28.11,28.15,28.03,28.1,28.15,28.08,28.22,28.28,28.48,28.54,28.25,28.27,28.36,28.32,28.36,28.2,28.25,28.23,27.85,27.96,28.07,28.11,28.06,28.19,28.28,28.27,28.32,28.22,28.28,28.22,28.56,28.8,29.01,29.03,29.08,29.26,29.18,29.37,29.26,29.04,29.24,29.43,29.44,29.64,29.73,29.49,29.32,29.29,29.46,29.71,29.5,29.36,29.58],"sample":true},"official_latest":false,"yearly":{"labels":["2023","2024","2025","2026"],"d":[24.44,26.73,27.49,29.01]}},{"id":"lpg","group":"energy","name":"LPG (station, Bangkok)","name_th":"ก๊าซ LPG (สถานีบริการ กรุงเทพฯ)","unit":"THB/litre","d":[21.88,21.84,21.79,21.43,21.77,21.69,21.89,21.81,22.15,22.12,22.21,22.45,22.36,22.28,22.24,22.29,22.51,22.63,22.7,22.99,23.05,22.68,23.1,22.48,23.1,22.57,22.12,21.91,22.24,22.0,22.28,22.61,22.4,22.35,22.49,22.57,22.34],"sample":true,"latest":{"v":22.34,"u":"THB/litre","when":"ตัวอย่าง / sample path — official daily table is free on EPPO (page was checked; wire the live figure in the build)","src":"EPPO — LPG retail prices today (ตัวอย่าง / sample)","href":"https://www.eppo.go.th/energy-price/lpg-retail-price-today/%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2%E0%B8%81%E0%B9%8A%E0%B8%B2%E0%B8%8B-lpg/"},"method":"Administered or policy-set price: no futures curve. The chart shows a scenario band (hold / follow oil with a lag / policy shock). Procurement and Oil Fund or ERC decisions matter more than the model. Not advice.","method_th":"ราคาที่ทางการกำหนด ไม่มีเส้นฟิวเจอร์ส กราฟแสดงแถบฉากทัศน์ (ทรงตัว / ตามราคาน้ำมันแบบมีดีเลย์ / ช็อกจากนโยบาย) การตัดสินใจของจัดซื้อ กองทุนน้ำมัน หรือ กกพ. สำคัญกว่าโมเดล ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily official (EPPO LPG retail table); cooking-gas cylinder prices are on the same page","freq_th":"รายวันทางการ (ตารางราคา LPG ของ สนพ.); ราคาถังก๊าซหุงต้มอยู่หน้าเดียวกัน","src_name":"EPPO — LPG retail prices today","src_url":"https://www.eppo.go.th/energy-price/lpg-retail-price-today/%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2%E0%B8%81%E0%B9%8A%E0%B8%B2%E0%B8%8B-lpg/","notes":"EPPO publishes Bangkok-area LPG station and cylinder prices by brand, with an effective date. The path on this card is sample so the layout can be reviewed. Confirm whether Malee uses station LPG or bulk/cylinder and pick the matching row.","notes_th":"สนพ. เผยแพร่ราคา LPG สถานีและถังในเขตกรุงเทพฯ แยกยี่ห้อ พร้อมวันที่มีผล เส้นบนการ์ดเป็นตัวอย่างเพื่อเลย์เอาต์ ยืนยันว่ามาลีใช้ LPG สถานี หรือถัง/ปริมาณมาก แล้วเลือกแถวที่ตรง","futures":null,"daily":{"labels":["2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01","2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-07","2026-11-08","2026-11-09","2026-11-10","2026-11-11","2026-11-12","2026-11-13","2026-11-14","2026-11-15","2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22","2026-11-23"],"d":[21.54,21.52,21.6,21.53,21.5,21.44,21.4,21.36,21.35,21.39,21.42,21.43,21.41,21.37,21.42,21.36,21.34,21.43,21.31,21.27,21.25,21.34,21.25,21.14,21.17,21.28,21.18,21.19,21.23,21.25,21.2,21.2,21.22,21.22,21.17,21.21,21.29,21.39,21.44,21.59,21.68,21.7,21.73,21.62,21.65,21.55,21.55,21.56,21.69,21.71,21.77,21.79,21.73,21.83,21.87,21.92,21.96,21.92,21.98,22.08,22.19,22.23,22.15,22.13,22.19,22.19,22.25,22.14,22.15,22.28,22.37,22.43,22.38,22.35,22.35,22.35,22.37,22.45,22.52,22.56,22.65,22.67,22.6,22.56,22.48,22.41,22.35,22.33,22.29,22.34],"sample":true},"official_latest":false,"yearly":{"labels":["2023","2024","2025","2026"],"d":[21.86,22.0,22.69,22.3]}},{"id":"ngv","group":"energy","name":"NGV (compressed natural gas)","name_th":"ก๊าซ NGV","unit":"THB/kg","d":[19.59,19.59,19.59,19.59,19.59,18.66,18.35,18.15,18.15,18.59,18.59,17.9,17.46,17.9,17.9,18.7,18.8,18.45,18.55,18.1,17.36,17.08,17.3,17.16,16.77,16.48,16.69,16.62,16.62,16.66,17.0,18.0,19.0,20.0,20.0,20.0,null],"sample":false,"latest":{"v":20.0,"u":"THB/kg","when":"Oct 2026 · EPPO official monthly table","src":"EPPO NGV monthly prices","href":"https://www.eppo.go.th/data-energy-statistic/energy-price-th/%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2-ngv/"},"method":"Administered or policy-set price: no futures curve. The chart shows a scenario band (hold / follow oil with a lag / policy shock). Procurement and Oil Fund or ERC decisions matter more than the model. Not advice.","method_th":"ราคาที่ทางการกำหนด ไม่มีเส้นฟิวเจอร์ส กราฟแสดงแถบฉากทัศน์ (ทรงตัว / ตามราคาน้ำมันแบบมีดีเลย์ / ช็อกจากนโยบาย) การตัดสินใจของจัดซื้อ กองทุนน้ำมัน หรือ กกพ. สำคัญกว่าโมเดล ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Monthly official (EPPO NGV table). Not published daily.","freq_th":"รายเดือนทางการ (ตารางราคา NGV ของ สนพ.) ไม่ได้เผยแพร่รายวัน","src_name":"EPPO — NGV monthly prices","src_url":"https://www.eppo.go.th/data-energy-statistic/energy-price-th/%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2-ngv/","notes":"Official monthly history is used on this card (EPPO). October 2026 is 20.00 baht/kg; November was not yet on the table when checked. There is no official daily NGV series — the Day view will say so. If Malee needs a daily plant price, procurement or PTT can send it.","notes_th":"การ์ดนี้ใช้ประวัติรายเดือนทางการ (สนพ.) ตุลาคม 2026 อยู่ที่ 20.00 บาท/กก. พฤศจิกายนยังไม่ขึ้นตารางในวันที่ตรวจสอบ ไม่มีชุด NGV รายวันทางการ — มุมมองรายวันจะบอกดังนั้น หากมาลีต้องการราคารายวันที่โรงงาน ให้จัดซื้อหรือ ปตท. ส่งมา","futures":null,"daily":null,"official_latest":true,"no_daily":"EPPO publishes NGV monthly, not daily. A daily plant or station price would need PTT or procurement to send it.","no_daily_th":"สนพ. เผยแพร่ NGV เป็นรายเดือน ไม่ใช่รายวัน หากต้องการราคารายวันที่โรงงานหรือสถานี ต้องให้ ปตท. หรือจัดซื้อส่งมา","yearly":{"labels":["2023","2024","2025","2026"],"d":[19.59,18.54,17.72,18.06]}},{"id":"lng","group":"energy","name":"LNG (international proxy)","name_th":"ก๊าซธรรมชาติเหลว LNG (ตัวแทนตลาดโลก)","unit":"USD/mmBtu","d":[10.83,10.04,9.28,9.5,10.07,9.88,9.85,9.08,9.16,9.04,9.75,11.15,11.09,10.63,10.62,10.32,10.01,10.48,10.56,10.87,10.09,10.03,9.68,10.28,10.4,10.36,10.32,10.57,10.37,9.94,9.64,9.8,9.94,9.09,8.24,8.45,8.46],"sample":true,"latest":{"v":8.46,"u":"USD/mmBtu","when":"ตัวอย่าง / sample path — replace with Pink Sheet in the build; daily JKM needs a paid feed or a pasted quote","src":"World Bank Pink Sheet (LNG, Japan) — free monthly; JKM (Platts) paid for a daily market view; PTT / procurement for the Thai contract (ตัวอย่าง / sample)","href":"https://www.worldbank.org/en/research/commodity-markets"},"method":"No free public spot series at Malee’s exact grade. Direction can be watched via a public proxy (e.g. US PPI or a related farm-gate price) but the baht price on the card is sample. Best path: paid index and/or procurement upload of actual invoices. Trend + seasonal band only. Not advice.","method_th":"ไม่มีชุดราคาจรสาธารณะฟรีที่ตรงเกรดที่มาลีใช้ ดูทิศทางจากตัวแทนสาธารณะได้ (เช่น US PPI หรือราคาเกษตรที่เกี่ยวข้อง) แต่ราคาบาทบนการ์ดเป็นตัวอย่าง แนวทางที่ดี: ดัชนีแบบเสียเงิน และ/หรือให้จัดซื้ออัปโหลดใบแจ้งหนี้จริง ใช้แถบแนวโน้มและฤดูกาลเท่านั้น ไม่ใช่คำแนะนำ","access":"partial","feasible":"partial","freq":"World Bank Pink Sheet is monthly and free (Japan LNG). JKM spot/futures are the usual daily benchmark but full data is paid (S&P Platts). Thai PTT / pool contract prices are not a free daily public series.","freq_th":"World Bank Pink Sheet เป็นรายเดือนและฟรี (LNG ญี่ปุ่น) JKM เป็นเกณฑ์รายวันที่ใช้กัน แต่ข้อมูลเต็มเป็นแบบเสียเงิน (S&P Platts) ราคาตามสัญญา ปตท. / ราคาพูลของไทย ไม่มีเป็นชุดรายวันสาธารณะฟรี","src_name":"World Bank Pink Sheet (LNG, Japan) — free monthly; JKM (Platts) paid for a daily market view; PTT / procurement for the Thai contract","src_url":"https://www.worldbank.org/en/research/commodity-markets","notes":"A free monthly international series (World Bank) can be wired. A true daily Thai LNG cost almost certainly needs procurement or PTT to send the contract or pool price, unless a JKM licence is approved. The mock-up therefore offers a daily upload path.","notes_th":"ชุดรายเดือนสากลฟรี (ธนาคารโลก) สามารถต่อได้ ต้นทุน LNG รายวันของไทยเกือบต้องให้จัดซื้อหรือ ปตท. ส่งราคาตามสัญญาหรือราคาพูล เว้นแต่จะอนุมัติไลเซนส์ JKM ม็อกอัปจึงมีช่องอัปโหลดรายวัน","futures":null,"daily":{"labels":["2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-01","2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-07","2026-11-08","2026-11-09","2026-11-10","2026-11-11","2026-11-12","2026-11-13","2026-11-14","2026-11-15","2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22","2026-11-23"],"d":[9.37,9.18,9.24,9.55,9.63,9.5,9.25,8.97,9.02,9.23,9.04,8.82,9.13,9.1,9.17,9.16,9.38,9.49,9.36,9.28,9.15,9.65,9.74,9.54,9.45,9.4,9.31,9.43,9.32,9.42,9.4,9.24,9.27,9.23,9.18,9.34,9.39,9.71,9.84,9.96,10.08,9.98,9.97,10.13,10.08,9.95,9.89,9.9,10.18,10.08,9.74,10.17,10.03,10.0,10.01,10.24,10.59,10.85,10.81,10.98,10.99,10.98,10.84,10.83,11.05,10.96,10.61,10.44,10.56,10.33,10.31,10.4,10.39,10.25,10.37,9.96,9.95,10.04,9.78,9.6,9.79,9.89,9.65,9.69,9.66,9.23,9.22,8.91,8.79,8.46],"sample":true},"official_latest":false,"needs_upload":true,"yearly":{"labels":["2023","2024","2025","2026"],"d":[10.43,9.87,10.31,9.53]}},{"id":"ft","group":"energy","name":"Electricity Ft rate (retail)","name_th":"ค่าเอฟทีไฟฟ้า (ขายปลีก)","unit":"satang/kWh","d":[20.48,20.48,39.72,39.72,39.72,39.72,39.72,39.72,39.72,39.72,39.72,39.72,39.72,39.72,36.72,36.72,36.72,36.72,19.72,19.72,19.72,19.72,15.72,15.72,15.72,15.72,9.72,9.72,9.72,9.72,16.23,16.23,16.23,16.23,16.23,16.23,16.23],"sample":false,"latest":{"v":16.23,"u":"satang/kWh","when":"Sep–Dec 2026 · ERC official","src":"ERC Ft table — 16.23 satang/unit (average tariff 3.95 THB/kWh ex-VAT, same period)","href":"https://www.erc.or.th/th/automatic/1355"},"method":"Administered or policy-set price: no futures curve. The chart shows a scenario band (hold / follow oil with a lag / policy shock). Procurement and Oil Fund or ERC decisions matter more than the model. Not advice.","method_th":"ราคาที่ทางการกำหนด ไม่มีเส้นฟิวเจอร์ส กราฟแสดงแถบฉากทัศน์ (ทรงตัว / ตามราคาน้ำมันแบบมีดีเลย์ / ช็อกจากนโยบาย) การตัดสินใจของจัดซื้อ กองทุนน้ำมัน หรือ กกพ. สำคัญกว่าโมเดล ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Every 4 months (ERC official). Not a daily price.","freq_th":"ทุก 4 เดือน (กกพ. ทางการ) ไม่ใช่ราคารายวัน","src_name":"ERC — automatic Ft tariff (official table)","src_url":"https://www.erc.or.th/th/automatic/1355","notes":"Official ERC history is used (stepwise). Current period (Sep–Dec 2026) is 16.23 satang/kWh. ERC also cited an average tariff of 3.95 baht/kWh (ex-VAT) for this period. MEA and PEA publish the full industrial tariff schedules (TOU, demand charge) which matter more for a factory bill than Ft alone. Day view is not meaningful — Ft is a 4-month rate.","notes_th":"ใช้ประวัติทางการของ กกพ. (เป็นขั้น) งวดปัจจุบัน (ก.ย.–ธ.ค. 2026) อยู่ที่ 16.23 สตางค์/หน่วย กกพ. ยังอ้างค่าไฟเฉลี่ย 3.95 บาท/หน่วย (ไม่รวม VAT) ในงวดนี้ กฟน. และ กฟภ. เผยแพร่โครงสร้างค่าไฟอุตสาหกรรมเต็ม (TOU, ค่าความต้องการ) ซึ่งสำคัญต่อบิลโรงงานมากกว่าค่า Ft อย่างเดียว มุมมองรายวันไม่มีความหมาย — Ft เป็นอัตรางวด 4 เดือน","futures":null,"daily":null,"official_latest":true,"no_daily":"Ft is set every four months by ERC, not daily. For a factory, also watch the MEA/PEA industrial tariff (base + Ft + demand charge).","no_daily_th":"ค่า Ft กำหนดทุกสี่เดือนโดย กกพ. ไม่ใช่รายวัน สำหรับโรงงาน ควรดูโครงสร้างค่าไฟอุตสาหกรรมของ กฟน./กฟภ. (ค่าฐาน + Ft + ค่าความต้องการ) ด้วย","extra":{"avg_tariff":3.95,"avg_unit":"THB/kWh","avg_note":"ERC-cited average tariff, Sep–Dec 2026, ex-VAT"},"yearly":{"labels":["2023","2024","2025","2026"],"d":[20.48,39.72,24.05,13.86]}},{"id":"fx","group":"fx","name":"Thai baht per US dollar","name_th":"บาทต่อดอลลาร์สหรัฐ","unit":"THB per USD","d":[35.395,34.981,35.222,35.849,35.95,36.767,36.635,36.709,36.215,34.739,33.254,33.409,34.444,34.143,34.229,33.794,33.775,33.729,32.971,32.584,32.455,32.413,31.964,32.544,32.37,31.575,31.275,31.245,32.263,32.285,32.493,32.899,33.493,33.009,33.233,33.651,33.652],"sample":false,"latest":{"dec":2,"v":33.88,"u":"THB per USD","when":"13 Nov 2026 (noon NY buying rate)","src":"FRED DEXTHUS","href":"https://fred.stlouisfed.org/series/DEXTHUS"},"method":"Bank forecast ranges already published (e.g. Krungsri). A weaker baht raises the baht cost of every dollar-priced input. Not advice.","method_th":"ใช้ช่วงพยากรณ์ที่ธนาคารเผยแพร่ (เช่น กรุงศรี) บาทอ่อนทำให้ต้นทุนวัตถุดิบที่คิดเป็นดอลลาร์สูงขึ้นเมื่อเป็นบาท ไม่ใช่คำแนะนำ","access":"free","feasible":"yes","freq":"Daily (BOT / Fed H.10); monthly average on the card","freq_th":"รายวัน (ธปท. / Fed H.10); การ์ดแสดงค่าเฉลี่ยรายเดือน","src_name":"Bank of Thailand / Fed H.10 (FRED DEXTHUS)","src_url":"https://fred.stlouisfed.org/series/DEXTHUS","notes":"Real series from the live dashboard. Shown in the header because it affects the baht cost of every dollar-priced input. Bank forecast ranges (e.g. Krungsri as of 3 Nov 2026) are used for the look-ahead.","notes_th":"ชุดจริงจากแดชบอร์ดปัจจุบัน แสดงที่หัวหน้าเพราะมีผลต่อต้นทุนเป็นบาทของวัตถุดิบที่คิดเป็นดอลลาร์ ช่วงพยากรณ์ของธนาคาร (เช่น กรุงศรี ณ 3 พ.ย. 2026) ใช้ในการมองไปข้างหน้า","futures":null,"tag":"USD/THB","fx_range":{"labels":["2026-12","2027-03","2027-06","2027-09"],"low":[33.0,32.5,32.25,32.0],"high":[34.1,33.75,33.75,33.5],"label":"Krungsri forecast range, as of 3 Nov 2026","label_th":"ช่วงพยากรณ์ของกรุงศรี ณ 3 พ.ย. 2026"}},{"id":"wp_occ","group":"scrap","name":"Wongpanit — brown cardboard (grade A)","name_th":"วงษ์พาณิชย์ — กระดาษแข็งกล่องน้ำตาล (A)","unit":"THB/kg","d":[3.36,3.35,3.39,3.31,3.25,3.4,3.31,3.33,3.25,3.3,3.36,3.47,3.58,3.48,3.41,3.35,3.31,3.34,3.34,3.26,3.19,3.45,3.28,3.5,3.36,3.24,3.2,3.16,3.15,3.09,3.06,3.09,3.17,3.2,3.28,3.28,3.8],"sample":true,"latest":{"v":3.8,"u":"THB/kg","when":"19 Nov 2026 · Wongpanit mid buy-in prices (Phitsanulok list)","src":"Wongpanit mid buy-in, 19 Nov 2026","href":"https://wongpanit.com/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Daily (Wongpanit public list); history available day-by-day on their site","freq_th":"รายวัน (ตารางสาธารณะของวงษ์พาณิชย์); มีประวัติรายวันบนเว็บไซต์","src_name":"Wongpanit — today’s mid buy-in prices, with a day-by-day history page","src_url":"https://wongpanit.com/","notes":"Latest point is the mid buy-in price published on wongpanit.com, dated 19 Nov 2026 (checked during this mock-up). The 3-year path behind it is sample, because the public history page is day-by-day and was not fully scraped. These are Wongpanit’s buy-in prices, not Malee’s scrap sale prices — a useful local indicator. Branch prices can differ. This is the local cardboard indicator to read next to international OCC and kraft liner on the Packaging tab.","notes_th":"จุดล่าสุดคือราคากลางรับซื้อที่เผยแพร่บน wongpanit.com วันที่ 19 พ.ย. 2026 (ตรวจในช่วงทำม็อกอัปนี้) เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้ดึงครบ เหล่านี้เป็นราคารับซื้อของวงษ์พาณิชย์ ไม่ใช่ราคาขายของเก่าของมาลี — ใช้เป็นตัวชี้ในประเทศได้ ราคาแต่ละสาขาอาจต่างกัน","futures":null,"daily":null,"official_latest":true,"latest_is_real":true},{"id":"wp_carton","group":"scrap","name":"Wongpanit — beverage / milk cartons","name_th":"วงษ์พาณิชย์ — กระดาษกล่องนม / กล่องน้ำผลไม้","unit":"THB/kg","d":[4.67,4.62,4.72,4.71,4.43,4.5,4.41,4.54,4.72,5.02,5.1,5.08,5.2,5.31,5.04,5.01,4.91,5.09,5.16,5.26,5.43,5.52,5.3,5.2,5.31,5.25,5.15,5.3,5.44,5.41,5.38,5.55,5.5,5.37,5.48,5.7,5.0],"sample":true,"latest":{"v":5.0,"u":"THB/kg","when":"19 Nov 2026 · Wongpanit mid buy-in prices (Phitsanulok list)","src":"Wongpanit mid buy-in, 19 Nov 2026","href":"https://wongpanit.com/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Daily (Wongpanit public list); history available day-by-day on their site","freq_th":"รายวัน (ตารางสาธารณะของวงษ์พาณิชย์); มีประวัติรายวันบนเว็บไซต์","src_name":"Wongpanit — today’s mid buy-in prices, with a day-by-day history page","src_url":"https://wongpanit.com/","notes":"Latest point is the mid buy-in price published on wongpanit.com, dated 19 Nov 2026 (checked during this mock-up). The 3-year path behind it is sample, because the public history page is day-by-day and was not fully scraped. These are Wongpanit’s buy-in prices, not Malee’s scrap sale prices — a useful local indicator. Branch prices can differ. Closest published scrap line to used juice cartons.","notes_th":"จุดล่าสุดคือราคากลางรับซื้อที่เผยแพร่บน wongpanit.com วันที่ 19 พ.ย. 2026 (ตรวจในช่วงทำม็อกอัปนี้) เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้ดึงครบ เหล่านี้เป็นราคารับซื้อของวงษ์พาณิชย์ ไม่ใช่ราคาขายของเก่าของมาลี — ใช้เป็นตัวชี้ในประเทศได้ ราคาแต่ละสาขาอาจต่างกัน","futures":null,"daily":null,"official_latest":true,"latest_is_real":true},{"id":"wp_pet","group":"scrap","name":"Wongpanit — clear PET bottles (No.1)","name_th":"วงษ์พาณิชย์ — ขวดน้ำ PET ใส (เบอร์ 1)","unit":"THB/kg","d":[7.54,7.61,7.91,7.72,8.18,8.48,8.7,8.82,9.27,9.49,9.75,9.28,9.38,10.09,10.34,10.08,10.01,10.63,11.58,11.42,11.94,11.39,11.46,12.05,11.41,11.68,11.36,11.4,11.52,11.48,11.28,11.63,11.86,11.8,10.77,10.26,8.5],"sample":true,"latest":{"v":8.5,"u":"THB/kg","when":"19 Nov 2026 · Wongpanit mid buy-in prices (Phitsanulok list)","src":"Wongpanit mid buy-in, 19 Nov 2026","href":"https://wongpanit.com/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Daily (Wongpanit public list); history available day-by-day on their site","freq_th":"รายวัน (ตารางสาธารณะของวงษ์พาณิชย์); มีประวัติรายวันบนเว็บไซต์","src_name":"Wongpanit — today’s mid buy-in prices, with a day-by-day history page","src_url":"https://wongpanit.com/","notes":"Latest point is the mid buy-in price published on wongpanit.com, dated 19 Nov 2026 (checked during this mock-up). The 3-year path behind it is sample, because the public history page is day-by-day and was not fully scraped. These are Wongpanit’s buy-in prices, not Malee’s scrap sale prices — a useful local indicator. Branch prices can differ. Read next to PET resin on the Packaging tab. Some related grades were marked temporarily paused on the same day.","notes_th":"จุดล่าสุดคือราคากลางรับซื้อที่เผยแพร่บน wongpanit.com วันที่ 19 พ.ย. 2026 (ตรวจในช่วงทำม็อกอัปนี้) เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้ดึงครบ เหล่านี้เป็นราคารับซื้อของวงษ์พาณิชย์ ไม่ใช่ราคาขายของเก่าของมาลี — ใช้เป็นตัวชี้ในประเทศได้ ราคาแต่ละสาขาอาจต่างกัน","futures":null,"daily":null,"official_latest":true,"latest_is_real":true},{"id":"wp_hdpe","group":"scrap","name":"Wongpanit — cloudy HDPE bottles","name_th":"วงษ์พาณิชย์ — ขวดน้ำขาว-ขุ่น (HDPE)","unit":"THB/kg","d":[4.46,4.49,4.2,4.39,4.85,4.92,4.84,4.55,4.59,4.48,4.57,4.34,4.52,4.76,4.51,4.61,4.83,4.97,5.05,5.06,5.1,5.13,5.01,4.93,5.02,5.32,5.35,5.17,5.24,5.55,5.39,5.34,5.28,5.44,5.31,5.3,5.0],"sample":true,"latest":{"v":5.0,"u":"THB/kg","when":"19 Nov 2026 · Wongpanit mid buy-in prices (Phitsanulok list)","src":"Wongpanit mid buy-in, 19 Nov 2026","href":"https://wongpanit.com/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Daily (Wongpanit public list); history available day-by-day on their site","freq_th":"รายวัน (ตารางสาธารณะของวงษ์พาณิชย์); มีประวัติรายวันบนเว็บไซต์","src_name":"Wongpanit — today’s mid buy-in prices, with a day-by-day history page","src_url":"https://wongpanit.com/","notes":"Latest point is the mid buy-in price published on wongpanit.com, dated 19 Nov 2026 (checked during this mock-up). The 3-year path behind it is sample, because the public history page is day-by-day and was not fully scraped. These are Wongpanit’s buy-in prices, not Malee’s scrap sale prices — a useful local indicator. Branch prices can differ. Read next to HDPE resin on the Packaging tab.","notes_th":"จุดล่าสุดคือราคากลางรับซื้อที่เผยแพร่บน wongpanit.com วันที่ 19 พ.ย. 2026 (ตรวจในช่วงทำม็อกอัปนี้) เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้ดึงครบ เหล่านี้เป็นราคารับซื้อของวงษ์พาณิชย์ ไม่ใช่ราคาขายของเก่าของมาลี — ใช้เป็นตัวชี้ในประเทศได้ ราคาแต่ละสาขาอาจต่างกัน","futures":null,"daily":null,"official_latest":true,"latest_is_real":true},{"id":"wp_can","group":"scrap","name":"Wongpanit — tin cans","name_th":"วงษ์พาณิชย์ — กระป๋อง","unit":"THB/kg","d":[4.1,4.15,4.23,4.12,3.97,3.95,3.87,4.01,4.05,4.02,3.92,3.88,3.79,3.65,3.7,3.72,3.51,3.48,3.54,3.35,3.41,3.48,3.39,3.34,3.36,3.59,3.51,3.44,3.28,3.31,3.33,3.16,3.03,3.23,3.24,3.15,4.5],"sample":true,"latest":{"v":4.5,"u":"THB/kg","when":"19 Nov 2026 · Wongpanit mid buy-in prices (Phitsanulok list)","src":"Wongpanit mid buy-in, 19 Nov 2026","href":"https://wongpanit.com/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Daily (Wongpanit public list); history available day-by-day on their site","freq_th":"รายวัน (ตารางสาธารณะของวงษ์พาณิชย์); มีประวัติรายวันบนเว็บไซต์","src_name":"Wongpanit — today’s mid buy-in prices, with a day-by-day history page","src_url":"https://wongpanit.com/","notes":"Latest point is the mid buy-in price published on wongpanit.com, dated 19 Nov 2026 (checked during this mock-up). The 3-year path behind it is sample, because the public history page is day-by-day and was not fully scraped. These are Wongpanit’s buy-in prices, not Malee’s scrap sale prices — a useful local indicator. Branch prices can differ. Read next to LME tin and aluminium on the Packaging tab.","notes_th":"จุดล่าสุดคือราคากลางรับซื้อที่เผยแพร่บน wongpanit.com วันที่ 19 พ.ย. 2026 (ตรวจในช่วงทำม็อกอัปนี้) เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้ดึงครบ เหล่านี้เป็นราคารับซื้อของวงษ์พาณิชย์ ไม่ใช่ราคาขายของเก่าของมาลี — ใช้เป็นตัวชี้ในประเทศได้ ราคาแต่ละสาขาอาจต่างกัน","futures":null,"daily":null,"official_latest":true,"latest_is_real":true},{"id":"wp_al","group":"scrap","name":"Wongpanit — aluminium (cookware grade, indicator only)","name_th":"วงษ์พาณิชย์ — อลูมิเนียมกระทะผัด (ใช้เป็นตัวชี้เท่านั้น)","unit":"THB/kg","d":[43.2,43.7,43.7,45.2,45.2,47.9,45.8,45.0,46.4,45.6,44.9,44.9,45.0,44.4,43.9,44.6,44.4,43.0,41.5,41.5,43.4,40.3,38.6,40.2,39.7,37.9,38.7,38.6,38.1,39.3,39.1,40.0,40.9,43.4,46.0,45.4,41.0],"sample":true,"latest":{"v":41.0,"u":"THB/kg","when":"19 Nov 2026 · Wongpanit mid buy-in prices (Phitsanulok list)","src":"Wongpanit mid buy-in, 19 Nov 2026","href":"https://wongpanit.com/"},"method":"Simple trend + seasonal model from the past 3 years, with a confidence band from residual variation. Labelled as a projection, not a forecast you should trade on, and not advice to lock a price.","method_th":"แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากข้อมูล 3 ปี พร้อมแถบความเชื่อมั่นจากความผันผวนที่เหลือ ติดป้ายว่าเป็นประมาณการ ไม่ใช่คำพยากรณ์สำหรับซื้อขาย และไม่ใช่คำแนะนำให้ล็อคราคา","access":"free","feasible":"yes","freq":"Daily (Wongpanit public list); history available day-by-day on their site","freq_th":"รายวัน (ตารางสาธารณะของวงษ์พาณิชย์); มีประวัติรายวันบนเว็บไซต์","src_name":"Wongpanit — today’s mid buy-in prices, with a day-by-day history page","src_url":"https://wongpanit.com/","notes":"Latest point is the mid buy-in price published on wongpanit.com, dated 19 Nov 2026 (checked during this mock-up). The 3-year path behind it is sample, because the public history page is day-by-day and was not fully scraped. These are Wongpanit’s buy-in prices, not Malee’s scrap sale prices — a useful local indicator. Branch prices can differ. The 19 Nov 2026 list showed aluminium cookware at 41.00 baht/kg; the card uses a sample path ending near that level. This is not can-sheet scrap — treat it only as a local aluminium-scrap indicator.","notes_th":"จุดล่าสุดคือราคากลางรับซื้อที่เผยแพร่บน wongpanit.com วันที่ 19 พ.ย. 2026 (ตรวจในช่วงทำม็อกอัปนี้) เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้ดึงครบ เหล่านี้เป็นราคารับซื้อของวงษ์พาณิชย์ ไม่ใช่ราคาขายของเก่าของมาลี — ใช้เป็นตัวชี้ในประเทศได้ ราคาแต่ละสาขาอาจต่างกัน","futures":null,"daily":null,"official_latest":true,"latest_is_real":true}]};
+  </script>
+  <script>
+(function () {
+  const DATA = window.CW4_DATA;
+  const MONTHS = DATA.months;
+  const ITEMS = DATA.items;
+  const LS = "cw4-lang";
+  let lang = "en";
+  try { lang = localStorage.getItem(LS) || localStorage.getItem("cw-lang") || "en"; } catch (e) {}
+  if (lang !== "th") lang = "en";
+
+  const T = {
+    en: {
+      kicker: "Malee Group PCL · Purchasing & Procurement · Mock-up for review",
+      title: "Commodity Watch — v4 mock-up",
+      lede: "A layout for procurement’s feedback: Thai and English, five category pages, a 12-month projection with a confidence band, energy at daily / monthly / yearly resolution, and a source-status table for every item. This page is a mock-up. It is not the live dashboard, and it is not linked from that page yet.",
+      badge: "Mock-up · v4 for review",
+      stamp: "Laid out 24 November 2026 (Asia/Bangkok). Existing series are unchanged from the live dashboard (as of 17–18 Nov 2026). New paths are marked ตัวอย่าง / sample unless an official source is cited.",
+      fx: "USD/THB",
+      fxWhen: "latest official week in the live dashboard",
+      tab_concentrate: "Concentrate",
+      tab_ingredient: "Ingredient",
+      tab_packaging: "Packaging",
+      tab_energy: "Energy",
+      tab_scrap: "Scrap",
+      tab_sources: "Sources & methods",
+      banner: "This is a mock-up of a split dashboard, published as a separate page so the live Commodity Watch is left unchanged. Figures marked ตัวอย่าง / sample are for layout only. Projections are a discussion aid for price-lock talks — they are not a recommendation to buy, sell or lock a contract.",
+      lead_concentrate: "Juice concentrates and the related Thai farm-gate fruit series. Frozen concentrated orange juice has a public futures curve. The other concentrates mostly do not — those cards are sample paths until a paid index or procurement invoices are added. Pineapple and coconut farm-gate prices (already on the live dashboard) sit here as related inputs, not as the concentrate itself.",
+      lead_ingredient: "Sugar, dairy powders and processing ingredients. Raw sugar and whole milk powder reuse the live dashboard’s public series and, where they exist, futures. Skim milk powder can use the same free GDT feed in the build; the path here is sample for layout. Citric acid, ascorbic acid and sodium ascorbate have no free public spot series we could use — they need a paid chem feed or a procurement upload.",
+      lead_packaging: "Metals, plastic resins, carton-box drivers and sea freight. Tin and aluminium are the live LME series. Resin and containerboard cards are sample levels: Thai contract prices sit behind paid assessments (ICIS, ChemOrbis, Fastmarkets). A free US PPI series can still be used as a direction-only proxy, as the live dashboard already does.",
+      lead_energy: "Oil, Thai fuels, gas and electricity. Use the Day / Month / Year switch on the chart. Diesel, LPG, fuel oil and the Ft rate have free official Thai sources (EPPO, ERC). NGV is official monthly, not daily. LNG has a free monthly international proxy (World Bank); a daily Thai contract price would need PTT or procurement to send it, unless a paid JKM feed is approved.",
+      lead_scrap: "Wongpanit’s published mid buy-in prices for recycled materials. The latest point on each card is the public list dated 19 November 2026. The 3-year path behind it is sample, because the history page is day-by-day and was not fully collected for this mock-up. These are buy-in prices at the published list, not Malee’s own scrap sale prices, and branches can differ.",
+      lead_sources: "For each item: the source we would use, a link, how often it updates, whether it is free, paid, or needs procurement to send a price, and whether a live feed looks feasible. “Partial” means a free proxy or occasional series exists, but not the exact grade or a full history we can republish.",
+      carton_h: "If you want to watch carton-box prices, watch these first",
+      carton_p: "Carton-box costs in Thailand mostly follow containerboard — kraft linerboard and corrugating medium. Those two, in turn, track recycled paper (OCC, old corrugated cartons) more closely than virgin pulp. Pulp (NBSK and BHKP) still matters for some kraft grades and for imported liner, so it is a secondary check, not the first one. On this page the four drivers are grouped below. International OCC and mill prices are usually paid series; the Scrap tab adds Wongpanit’s Thai cardboard buy-in price as a free local indicator.",
+      freq_day: "Day",
+      freq_month: "Month",
+      freq_year: "Year",
+      freq_lbl: "Energy chart:",
+      chg1: "1M", chg3: "3M", chg12: "12M",
+      sample: "ตัวอย่าง / sample",
+      official: "Official / live series",
+      official_latest: "Latest from official page",
+      source: "Source",
+      selected: "Selected for the chart",
+      chart_h: "History and a 12-month projection",
+      method_h: "How this projection is built",
+      caveat: "This is a projection for discussion, not advice to lock a price. Compare a supplier quote with the band; a quote inside the band is not automatically a signal to lock. Futures are what the market is paying today for later delivery — they change every day and are not a promise.",
+      hist: "History",
+      fut: "Traded futures (interpolated)",
+      ext: "Statistical extension (not a traded contract)",
+      band: "Confidence / scenario band",
+      nodaily: "No official daily series for this item.",
+      upload_h: "Procurement daily input",
+      upload_p: "For items with no free public daily series — especially named juice concentrates, chem ingredients, Thai resin and a Thai LNG contract — procurement can paste or upload a daily or weekly price. In the live build this would append to the series, with the analyst’s name and the date (Bangkok time). This mock-up does not store files.",
+      upload_name: "Analyst name",
+      upload_item: "Item",
+      upload_ph: "Paste CSV: date, item, price, unit, source (one row per observation)",
+      upload_btn: "Preview only — not saved",
+      upload_ok: "In the live build this would be saved and stamped. This mock-up does not store the file or the paste.",
+      src_item: "Item",
+      src_source: "Source",
+      src_freq: "Frequency",
+      src_access: "Access",
+      src_feas: "Feasible?",
+      src_notes: "Notes",
+      access_free: "Free public",
+      access_paid: "Paid index",
+      access_partial: "Partial (proxy / some free)",
+      feas_yes: "Yes",
+      feas_partial: "Partial",
+      feas_no: "No — needs procurement or a paid feed",
+      methods_h: "Recommended projection method, by group",
+      m1h: "Exchange-traded (FCOJ, sugar #11, Brent, WMP — and SMP once wired)",
+      m1p: "Use the public futures curve, interpolated to monthly points. After the last listed contract, draw a dashed statistical extension and say so. Never present the extension as a traded price.",
+      m2h: "LME metals (tin, aluminium)",
+      m2p: "Use cash versus the official 3-month price, and a published annual outlook (World Bank) as a checkpoint. The band is residual variation, not a traded curve.",
+      m3h: "Thai baht",
+      m3p: "Use published bank forecast ranges (already on the live dashboard, e.g. Krungsri). A weaker baht raises the baht cost of every dollar-priced input.",
+      m4h: "Thai administered energy (diesel, LPG, NGV, fuel oil, Ft)",
+      m4p: "There is no market curve to follow. Show a scenario band: hold, follow oil with a lag, or a policy shock (Oil Fund or ERC). Policy and procurement matter more than the model. NGV is monthly; Ft is every four months — do not invent a daily path.",
+      m5h: "Concentrates and ingredients without futures",
+      m5p: "A simple trend-plus-seasonal model from the available history, with a wide confidence band, clearly labelled as a projection. Prefer a paid index or invoices as soon as they are available; do not pretend the sample path is a quote.",
+      m6h: "Resins, containerboard, pulp, sea freight",
+      m6p: "Direction from a free proxy (US PPI, or a freight composite we are licensed to show) plus a trend band. Lock decisions should use a paid Asian assessment, a licensed freight series, or the actual supplier quote. Sea freight is a landed-cost driver, not a packaging material.",
+      m7h: "Wongpanit scrap",
+      m7p: "Short-horizon trend only, from the daily public list. Do not treat the buy-in list as Malee’s realised scrap price.",
+      foot: "Commodity Watch v4 mock-up · compiled 24 November 2026, Asia/Bangkok · public sources and clearly labelled sample figures · not for trading or procurement advice · not the live dashboard (the live page is unchanged).",
+      when_sample: "ตัวอย่าง / sample — not a live quote",
+    },
+    th: {
+      kicker: "บริษัท มาลีกรุ๊ป จำกัด (มหาชน) · จัดซื้อจัดหา · ม็อกอัปสำหรับพิจารณา",
+      title: "Commodity Watch — ม็อกอัปเวอร์ชัน 4",
+      lede: "เลย์เอาต์ตามความเห็นของจัดซื้อ: เมนูไทยและอังกฤษ แยกห้าหน้าหมวด ประมาณการ 12 เดือนพร้อมแถบความเชื่อมั่น พลังงานที่ดูได้รายวัน รายเดือน รายปี และตารางสถานะแหล่งข้อมูลทุกตัว หน้านี้เป็นม็อกอัป ไม่ใช่แดชบอร์ดที่ใช้อยู่ และยังไม่ได้ลิงก์จากหน้านั้น",
+      badge: "ม็อกอัป · เวอร์ชัน 4 สำหรับพิจารณา",
+      stamp: "จัดวาง 24 พฤศจิกายน 2026 (เวลาประเทศไทย) ชุดข้อมูลที่มีอยู่ยังใช้ชุดเดียวกับแดชบอร์ดปัจจุบัน (ณ 17–18 พ.ย. 2026) เส้นใหม่ติดป้าย ตัวอย่าง / sample เว้นแต่จะอ้างแหล่งทางการ",
+      fx: "ดอลลาร์/บาท",
+      fxWhen: "สัปดาห์ทางการล่าสุดในแดชบอร์ดปัจจุบัน",
+      tab_concentrate: "น้ำเข้มข้น",
+      tab_ingredient: "ส่วนผสม",
+      tab_packaging: "บรรจุภัณฑ์",
+      tab_energy: "พลังงาน",
+      tab_scrap: "ของเก่า / รีไซเคิล",
+      tab_sources: "แหล่งข้อมูลและวิธีคิด",
+      banner: "นี่คือม็อกอัปของแดชบอร์ดที่แยกหน้า เผยแพร่เป็นหน้าต่างหากเพื่อไม่ให้แดชบอร์ดปัจจุบันเปลี่ยน ตัวเลขที่ติดป้าย ตัวอย่าง / sample ใช้จัดเลย์เอาต์เท่านั้น ประมาณการเป็นเครื่องมือสำหรับคุยเรื่องล็อคราคา — ไม่ใช่คำแนะนำให้ซื้อ ขาย หรือล็อกสัญญา",
+      lead_concentrate: "น้ำผลไม้เข้มข้น และราคาเกษตรกรไทยที่เกี่ยวข้อง น้ำส้มเข้มข้นแช่แข็งมีเส้นฟิวเจอร์สสาธารณะ ส่วนน้ำเข้มข้นอื่นส่วนใหญ่ไม่มี — การ์ดเหล่านั้นเป็นเส้นตัวอย่างจนกว่าจะมีดัชนีแบบเสียเงินหรือใบแจ้งหนี้จากจัดซื้อ ราคาสับปะรดและมะพร้าวเกษตรกร (ที่มีในแดชบอร์ดปัจจุบัน) อยู่ที่นี่ในฐานะวัตถุดิบที่เกี่ยวข้อง ไม่ใช่ตัวน้ำเข้มข้นเอง",
+      lead_ingredient: "น้ำตาล นมผง และส่วนผสมในกระบวนการผลิต น้ำตาลดิบและนมผงเต็มไขมันใช้ชุดสาธารณะชุดเดียวกับแดชบอร์ดปัจจุบัน และใช้ฟิวเจอร์สเมื่อมี นมผงพร่องมันเนยสามารถใช้ฟีด GDT ฟรีชุดเดียวกันในเวอร์ชันจริง เส้นที่นี่เป็นตัวอย่างเพื่อเลย์เอาต์ กรดมะนาว กรดแอสคอร์บิก และโซเดียมแอสคอร์เบต ไม่มีราคาจรสาธารณะฟรีที่เราใช้ได้ — ต้องใช้ฟีดเคมีแบบเสียเงินหรือให้จัดซื้ออัปโหลด",
+      lead_packaging: "โลหะ เม็ดพลาสติก ตัวขับราคาลังกระดาษ และค่าเรือ ดีบุกและอะลูมิเนียมเป็นชุด LME ชุดเดียวกับหน้าปัจจุบัน การ์ดเม็ดพลาสติกและกระดาษลังเป็นระดับตัวอย่าง: ราคาตามสัญญาเป็นบาทอยู่ในดัชนีแบบเสียเงิน (ICIS, ChemOrbis, Fastmarkets) ชุด US PPI ฟรียังใช้เป็นตัวแทนทิศทางได้ ตามที่แดชบอร์ดปัจจุบันใช้แล้ว",
+      lead_energy: "น้ำมัน เชื้อเพลิงไทย ก๊าซ และค่าไฟ ใช้ปุ่ม รายวัน / รายเดือน / รายปี บนกราฟ ดีเซล LPG น้ำมันเตา และค่าเอฟที มีแหล่งทางการไทยฟรี (สนพ., กกพ.) NGV เป็นรายเดือนทางการ ไม่ใช่รายวัน LNG มีตัวแทนรายเดือนสากลฟรี (ธนาคารโลก) ถ้าราคาสัญญาไทยรายวัน ต้องให้ ปตท. หรือจัดซื้อส่งมา เว้นแต่จะอนุมัติฟีด JKM แบบเสียเงิน",
+      lead_scrap: "ราคากลางรับซื้อวัสดุรีไซเคิลที่วงษ์พาณิชย์เผยแพร่ จุดล่าสุดบนแต่ละการ์ดคือตารางสาธารณะวันที่ 19 พฤศจิกายน 2026 เส้น 3 ปีด้านหลังเป็นตัวอย่าง เพราะหน้าประวัติเป็นรายวันและไม่ได้เก็บครบสำหรับม็อกอัปนี้ เหล่านี้เป็นราคารับซื้อตามตารางที่เผยแพร่ ไม่ใช่ราคาขายของเก่าของมาลีเอง และแต่ละสาขาอาจต่างกัน",
+      lead_sources: "แต่ละรายการ: แหล่งที่จะใช้ ลิงก์ ความถี่ในการอัปเดต ว่าฟรี แบบเสียเงิน หรือต้องให้จัดซื้อส่งราคา และว่าฟีดจริงทำได้หรือไม่ «บางส่วน» หมายความว่ามีตัวแทนฟรีหรือชุดเป็นครั้งคราว แต่ไม่ใช่เกรดที่ตรง หรือประวัติเต็มที่นำมาแสดงได้",
+      carton_h: "ถ้าอยากดูเทรนด์ราคาลังกระดาษ ให้ดูตัวเหล่านี้เป็นหลัก",
+      carton_p: "ต้นทุนลังกระดาษในไทยส่วนใหญ่ตามคอนเทนเนอร์บอร์ด — กระดาษคราฟต์ไลเนอร์และกระดาษลูกฟูก (กระดาษกลาง) สองตัวนี้ต่อมาตามกระดาษรีไซเคิล (OCC, กล่องลูกฟูกเก่า) มากกว่าเยื่อบริสุทธิ์ เยื่อไม้ (NBSK และ BHKP) ยังมีผลกับคราฟต์บางเกรดและไลเนอร์นำเข้า จึงเป็นจุดตรวจรอง ไม่ใช่ตัวแรก ในหน้านี้ตัวขับสี่ตัวถูกจัดกลุ่มไว้ด้านล่าง ราคา OCC ตลาดโลกและราคาโรงกระดาษมักเป็นชุดแบบเสียเงิน แท็บของเก่าเพิ่มราคารับซื้อกระดาษกล่องของวงษ์พาณิชย์เป็นตัวชี้ในประเทศที่ดูฟรีได้",
+      freq_day: "รายวัน",
+      freq_month: "รายเดือน",
+      freq_year: "รายปี",
+      freq_lbl: "กราฟพลังงาน:",
+      chg1: "1 เดือน", chg3: "3 เดือน", chg12: "12 เดือน",
+      sample: "ตัวอย่าง / sample",
+      official: "ชุดทางการ / ชุดจากหน้าปัจจุบัน",
+      official_latest: "ราคาล่าสุดจากหน้าทางการ",
+      source: "แหล่งข้อมูล",
+      selected: "กำลังแสดงในกราฟ",
+      chart_h: "ประวัติและประมาณการ 12 เดือนข้างหน้า",
+      method_h: "ประมาณการนี้สร้างอย่างไร",
+      caveat: "นี่คือประมาณการสำหรับใช้คุย ไม่ใช่คำแนะนำให้ล็อคราคา นำใบเสนอราคาจากผู้ขายมาเทียบกับแถบ ราคาที่อยู่ในแถบไม่ได้แปลว่าควรล็อกเสมอ ฟิวเจอร์สคือราคาที่ตลาดจ่ายวันนี้สำหรับการส่งมอบภายหลัง — เปลี่ยนทุกวัน และไม่ใช่คำสัญญา",
+      hist: "ประวัติ",
+      fut: "ฟิวเจอร์สที่มีการซื้อขาย (เทียบบรรจบรายเดือน)",
+      ext: "ส่วนขยายทางสถิติ (ไม่ใช่สัญญาซื้อขาย)",
+      band: "แถบความเชื่อมั่น / ฉากทัศน์",
+      nodaily: "รายการนี้ไม่มีชุดรายวันทางการ",
+      upload_h: "ช่องให้จัดซื้อส่งข้อมูลรายวัน",
+      upload_p: "สำหรับรายการที่ไม่มีชุดรายวันสาธารณะฟรี — โดยเฉพาะน้ำเข้มข้นที่ระบุชื่อ ส่วนผสมเคมี เม็ดพลาสติกไทย และสัญญานำเข้า LNG ของไทย — จัดซื้อสามารถวางหรืออัปโหลดราคารายวันหรือรายสัปดาห์ ในเวอร์ชันจริงจะต่อท้ายชุดข้อมูล พร้อมชื่อนักวิเคราะห์และวันเวลา (เวลาประเทศไทย) ม็อกอัปนี้ไม่เก็บไฟล์",
+      upload_name: "ชื่อนักวิเคราะห์",
+      upload_item: "รายการ",
+      upload_ph: "วาง CSV: วันที่, รายการ, ราคา, หน่วย, แหล่งข้อมูล (หนึ่งแถวต่อหนึ่งค่า)",
+      upload_btn: "ดูตัวอย่างเท่านั้น — ไม่ได้บันทึก",
+      upload_ok: "ในเวอร์ชันจริง ข้อมูลนี้จะถูกบันทึกและประทับชื่อ ม็อกอัปนี้ไม่เก็บไฟล์หรือข้อความที่วาง",
+      src_item: "รายการ",
+      src_source: "แหล่งข้อมูล",
+      src_freq: "ความถี่",
+      src_access: "การเข้าถึง",
+      src_feas: "ทำได้หรือไม่",
+      src_notes: "หมายเหตุ",
+      access_free: "สาธารณะ ฟรี",
+      access_paid: "ดัชนีแบบเสียเงิน",
+      access_partial: "บางส่วน (ตัวแทน / ฟรีบางส่วน)",
+      feas_yes: "ได้",
+      feas_partial: "บางส่วน",
+      feas_no: "ไม่ได้ — ต้องให้จัดซื้อส่ง หรือใช้ฟีดแบบเสียเงิน",
+      methods_h: "วิธีประมาณการที่แนะนำ แยกตามกลุ่ม",
+      m1h: "มีซื้อขายในตลาด (FCOJ, น้ำตาลเบอร์ 11, เบรนต์, นมผงเต็มไขมัน — และนมผงพร่องมันเนยเมื่อต่อฟีดแล้ว)",
+      m1p: "ใช้เส้นฟิวเจอร์สสาธารณะ เทียบบรรจบเป็นรายเดือน หลังจากสัญญาสุดท้ายที่จดทะเบียน ให้วาดส่วนขยายทางสถิติเป็นเส้นประ และบอกให้ชัด อย่าทำให้ส่วนขยายดูเหมือนราคาซื้อขายจริง",
+      m2h: "โลหะ LME (ดีบุก, อะลูมิเนียม)",
+      m2p: "ใช้ราคาเงินสดเทียบราคา 3 เดือนทางการ และแนวโน้มรายปีที่เผยแพร่ (ธนาคารโลก) เป็นจุดตรวจ แถบคือความผันผวนที่เหลือ ไม่ใช่เส้นซื้อขาย",
+      m3h: "ค่าเงินบาท",
+      m3p: "ใช้ช่วงพยากรณ์ที่ธนาคารเผยแพร่ (มีในแดชบอร์ดปัจจุบันแล้ว เช่น กรุงศรี) บาทอ่อนทำให้ต้นทุนวัตถุดิบที่คิดเป็นดอลลาร์สูงขึ้นเมื่อเป็นบาท",
+      m4h: "พลังงานไทยที่ทางการกำหนด (ดีเซล, LPG, NGV, น้ำมันเตา, ค่าเอฟที)",
+      m4p: "ไม่มีเส้นตลาดให้ตาม แสดงแถบฉากทัศน์: ทรงตัว ตามราคาน้ำมันแบบมีดีเลย์ หรือช็อกจากนโยบาย (กองทุนน้ำมันหรือ กกพ.) นโยบายและการจัดซื้อสำคัญกว่าโมเดล NGV เป็นรายเดือน ค่า Ft เป็นทุกสี่เดือน — อย่าสร้างเส้นรายวันขึ้นมาเอง",
+      m5h: "น้ำเข้มข้นและส่วนผสมที่ไม่มีฟิวเจอร์ส",
+      m5p: "ใช้แบบจำลองแนวโน้มและฤดูกาลอย่างง่ายจากประวัติที่มี พร้อมแถบความเชื่อมั่นที่กว้าง ติดป้ายว่าเป็นประมาณการอย่างชัดเจน เมื่อมีดัชนีแบบเสียเงินหรือใบแจ้งหนี้แล้วให้ใช้สิ่งนั้น อย่าทำให้เส้นตัวอย่างดูเหมือนราคาจริง",
+      m6h: "เม็ดพลาสติก, กระดาษลัง, เยื่อ, ค่าเรือ",
+      m6p: "ดูทิศทางจากตัวแทนฟรี (US PPI หรือดัชนีเฟรทที่ได้รับอนุญาต) บวกแถบแนวโน้ม การล็อคราคาควรใช้การประเมินเอเชียแบบเสียเงิน ชุดเฟรทที่มีไลเซนส์ หรือใบเสนอราคาจริง ค่าเรือเป็นตัวขับต้นทุนถึงคลัง ไม่ใช่วัตถุดิบบรรจุภัณฑ์",
+      m7h: "ของเก่าวงษ์พาณิชย์",
+      m7p: "ใช้แนวโน้มระยะสั้นจากตารางรับซื้อรายวันสาธารณะเท่านั้น อย่าถือว่าราคารับซื้อคือราคาขายของเก่าที่มาลีได้รับจริง",
+      foot: "ม็อกอัป Commodity Watch เวอร์ชัน 4 · รวบรวม 24 พฤศจิกายน 2026 เวลาประเทศไทย · แหล่งสาธารณะและตัวเลขตัวอย่างที่ติดป้ายชัดเจน · ไม่ใช่คำแนะนำการซื้อขายหรือการจัดซื้อ · ไม่ใช่แดชบอร์ดปัจจุบัน (หน้าปัจจุบันไม่ได้ถูกเปลี่ยน)",
+      when_sample: "ตัวอย่าง / sample — ไม่ใช่ราคาจริง",
+    }
+  };
+
+  const GROUPS = ["concentrate", "ingredient", "packaging", "energy", "scrap", "sources"];
+  let tab = "concentrate";
+  let selected = {};
+  let energyFreq = "month";
+  let chart;
+
+  const $ = (id) => document.getElementById(id);
+  const t = (k) => (T[lang] && T[lang][k]) || T.en[k] || k;
+  const L = (o, k) => (lang === "th" && o[k + "_th"] != null) ? o[k + "_th"] : o[k];
+  const byId = (id) => ITEMS.find((x) => x.id === id);
+
+  function fmtNum(v, nd) {
+    if (v == null || Number.isNaN(v)) return "—";
+    const n = Number(v);
+    let d = nd;
+    if (d == null) {
+      if (Math.abs(n) >= 1000) d = (Math.abs(n - Math.round(n)) < 0.05 ? 0 : 1);
+      else if (Math.abs(n) >= 100) d = 1;
+      else d = 2;
+    }
+    return n.toLocaleString(lang === "th" ? "th-TH" : "en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function shortSrc(it) {
+    const s = (it.latest && it.latest.src) || it.src_name || "";
+    const cut = s.split(" (ตัวอย่าง")[0].split(" — ")[0].split(" · ")[0];
+    return cut.length > 52 ? cut.slice(0, 50).trim() + "…" : cut;
+  }
+  function lastDefined(arr) {
+    for (let i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return { i, v: arr[i] };
+    return { i: -1, v: null };
+  }
+  function pctChange(arr, back) {
+    const cur = lastDefined(arr);
+    if (cur.i < 0) return null;
+    const j = cur.i - back;
+    if (j < 0 || arr[j] == null || !arr[j]) return null;
+    return (cur.v / arr[j] - 1) * 100;
+  }
+  function chgHtml(label, p) {
+    if (p == null) return "";
+    const cls = p > 0.15 ? "up" : p < -0.15 ? "down" : "flat";
+    const sign = p > 0 ? "+" : "";
+    return `<span class="${cls}">${label} ${sign}${p.toFixed(1)}%</span>`;
+  }
+  function monthLabel(ym) {
+    const [y, m] = ym.split("-").map(Number);
+    const en = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const th = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    return (lang === "th" ? th : en)[m - 1] + " " + y;
+  }
+  function dayLabel(iso) {
+    const [y, m, d] = iso.split("-");
+    return (+d) + " " + monthLabel(y + "-" + m).replace(/ \d{4}$/, "");
+  }
+  function addMonths(ym, n) {
+    let [y, m] = ym.split("-").map(Number);
+    m += n;
+    while (m > 12) { m -= 12; y++; }
+    while (m < 1) { m += 12; y--; }
+    return y + "-" + String(m).padStart(2, "0");
+  }
+  function lerp(a, b, t0) { return a + (b - a) * t0; }
+  function monthIndex(ym) {
+    const [y, m] = ym.split("-").map(Number);
+    return y * 12 + (m - 1);
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i]").forEach((el) => {
+      const k = el.getAttribute("data-i");
+      if (k) el.textContent = t(k);
+    });
+    document.querySelectorAll(".langsw button").forEach((b) => b.classList.toggle("on", b.dataset.l === lang));
+    const fx = byId("fx");
+    if (fx) {
+      $("fxVal").textContent = fmtNum(fx.latest.v, 2);
+      $("fxUnit").textContent = L(fx, "name");
+      $("fxWhen").textContent = fx.latest.when;
+      $("fxSrc").href = fx.latest.href || fx.src_url;
+    }
+    render();
+  }
+
+  function setLang(next) {
+    lang = next;
+    try { localStorage.setItem(LS, lang); } catch (e) {}
+    applyLang();
+  }
+
+  function itemsIn(group) { return ITEMS.filter((x) => x.group === group); }
+
+  function accessLabel(a) {
+    if (a === "free") return t("access_free");
+    if (a === "paid") return t("access_paid");
+    return t("access_partial");
+  }
+  function feasLabel(f) {
+    if (f === "yes") return t("feas_yes");
+    if (f === "partial") return t("feas_partial");
+    return t("feas_no");
+  }
+
+  function cardHtml(it) {
+    const last = lastDefined(it.d);
+    const price = (it.latest && it.latest.v != null) ? it.latest.v : last.v;
+    const nd = (it.latest && it.latest.dec != null) ? it.latest.dec : undefined;
+    const c1 = chgHtml(t("chg1"), pctChange(it.d, 1));
+    const c3 = chgHtml(t("chg3"), pctChange(it.d, 3));
+    const c12 = chgHtml(t("chg12"), pctChange(it.d, 12));
+    const isSel = selected[tab] === it.id;
+    const badges = [];
+    if (it.sample && it.latest_is_real) badges.push(`<span class="badge prelim">${t("official_latest")}</span><span class="badge sample">${t("sample")}</span>`);
+    else if (it.sample) badges.push(`<span class="badge sample">${t("sample")}</span>`);
+    else badges.push(`<span class="badge real">${t("official")}</span>`);
+    badges.push(`<span class="badge ${it.access}">${accessLabel(it.access)}</span>`);
+    const href = (it.latest && it.latest.href) || it.src_url;
+    const srcName = shortSrc(it);
+    return `<article class="cwcard${isSel ? " on" : ""}" data-id="${it.id}" role="button" tabindex="0">
+      <div class="flags">${badges.join(" ")}</div>
+      <div class="top">
+        <h3>${L(it, "name")}</h3>
+      </div>
+      <div class="now">${fmtNum(price, nd)} <span style="font-size:13px;color:var(--muted);font-family:inherit;font-weight:500">${it.latest && it.latest.u ? it.latest.u : it.unit}</span></div>
+      <div class="when">${it.latest && it.latest.when ? it.latest.when : ""}</div>
+      <div class="chg">${c1}${c3}${c12}</div>
+      <div class="spark"><canvas id="sp-${it.id}"></canvas></div>
+      <div class="src">${t("source")}: <a href="${href}" target="_blank" rel="noopener">${srcName}</a></div>
+    </article>`;
+  }
+
+  function spark(it) {
+    const el = document.getElementById("sp-" + it.id);
+    if (!el || !window.Chart) return;
+    const vals = it.d.map((v) => (v == null ? null : v));
+    new Chart(el, {
+      type: "line",
+      data: { labels: MONTHS, datasets: [{ data: vals, borderColor: "#163524", backgroundColor: "transparent", borderWidth: 1.5, pointRadius: 0, tension: 0.2, spanGaps: false }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false } }
+      }
+    });
+  }
+
+  // ----- 12-month projection -----
+  function forwardMonths(n) {
+    const out = [];
+    for (let i = 1; i <= n; i++) out.push(addMonths(MONTHS[MONTHS.length - 1], i));
+    return out;
+  }
+
+  function residualStd(arr) {
+    const xs = arr.filter((v) => v != null);
+    if (xs.length < 6) return (xs[xs.length - 1] || 1) * 0.08;
+    const rets = [];
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] != null && arr[i - 1]) rets.push(arr[i] / arr[i - 1] - 1);
+    }
+    if (!rets.length) return xs[xs.length - 1] * 0.08;
+    const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
+    const v = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / rets.length;
+    return Math.sqrt(v);
+  }
+
+  function seasonalFactors(arr) {
+    const acc = Array.from({ length: 12 }, () => []);
+    arr.forEach((v, i) => {
+      if (v == null) return;
+      const mo = (+MONTHS[i].slice(5)) - 1;
+      acc[mo].push(v);
+    });
+    const means = acc.map((a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+    const have = means.filter((x) => x != null);
+    const g = have.length ? have.reduce((a, b) => a + b, 0) / have.length : 1;
+    return means.map((m) => (m != null && g ? m / g : 1));
+  }
+
+  function interpolateFutures(item, fwd) {
+    const f = item.futures;
+    const pts = f.labels.map((l, i) => ({ t: monthIndex(l.length === 7 ? l : l), v: f.values[i], l }));
+    // labels are YYYY-MM
+    const lastH = lastDefined(item.d);
+    const lastYm = MONTHS[lastH.i];
+    const knots = [{ t: monthIndex(lastYm), v: lastH.v, kind: "hist" }].concat(
+      pts.map((p) => ({ t: monthIndex(p.l), v: p.v, kind: "fut" }))
+    );
+    knots.sort((a, b) => a.t - b.t);
+    const lastFut = pts[pts.length - 1];
+    const lastFutYm = lastFut.l;
+    const mid = [], hi = [], lo = [], kind = [];
+    const vol = residualStd(item.d);
+    fwd.forEach((ym, i) => {
+      const t0 = monthIndex(ym);
+      if (t0 <= monthIndex(lastFutYm)) {
+        let a = knots[0], b = knots[knots.length - 1];
+        for (let k = 0; k < knots.length - 1; k++) {
+          if (t0 >= knots[k].t && t0 <= knots[k + 1].t) { a = knots[k]; b = knots[k + 1]; break; }
+        }
+        const u = (b.t === a.t) ? 0 : (t0 - a.t) / (b.t - a.t);
+        const v = lerp(a.v, b.v, u);
+        mid.push(v);
+        const band = v * Math.max(0.03, vol * Math.sqrt(i + 1) * 1.2);
+        hi.push(v + band); lo.push(Math.max(0, v - band));
+        kind.push("fut");
+      } else {
+        // statistical extension beyond last contract
+        const stepsPast = t0 - monthIndex(lastFutYm);
+        // decay last futures slope toward zero
+        const slope = (pts.length >= 2) ? (pts[pts.length - 1].v - pts[pts.length - 2].v) / Math.max(1, monthIndex(pts[pts.length - 1].l) - monthIndex(pts[pts.length - 2].l)) : 0;
+        const decay = Math.exp(-0.25 * stepsPast);
+        const v = lastFut.v + slope * stepsPast * decay;
+        mid.push(v);
+        const band = v * Math.max(0.05, vol * Math.sqrt(i + 1) * 1.6);
+        hi.push(v + band); lo.push(Math.max(0, v - band));
+        kind.push("ext");
+      }
+    });
+    return { mid, hi, lo, kind, futLabel: L(f, "label") };
+  }
+
+  function project(item) {
+    const fwd = forwardMonths(12);
+    const last = lastDefined(item.d);
+    const vol = residualStd(item.d);
+    const sea = seasonalFactors(item.d);
+
+    if (item.fx_range) {
+      const r = item.fx_range;
+      const mid = [], hi = [], lo = [], kind = [];
+      fwd.forEach((ym) => {
+        const t0 = monthIndex(ym);
+        const knots = r.labels.map((l, i) => ({ t: monthIndex(l), lo: r.low[i], hi: r.high[i] }));
+        let a = knots[0], b = knots[knots.length - 1];
+        if (t0 <= knots[0].t) { a = b = knots[0]; }
+        else if (t0 >= knots[knots.length - 1].t) { a = b = knots[knots.length - 1]; }
+        else {
+          for (let k = 0; k < knots.length - 1; k++) {
+            if (t0 >= knots[k].t && t0 <= knots[k + 1].t) { a = knots[k]; b = knots[k + 1]; break; }
+          }
+        }
+        const u = (b.t === a.t) ? 0 : (t0 - a.t) / (b.t - a.t);
+        const loV = lerp(a.lo, b.lo, u), hiV = lerp(a.hi, b.hi, u);
+        lo.push(loV); hi.push(hiV); mid.push((loV + hiV) / 2); kind.push("fut");
+      });
+      return { fwd, mid, hi, lo, kind, note: L(r, "label") };
+    }
+
+    if (item.futures) return Object.assign({ fwd, note: item.futures[lang === "th" ? "label_th" : "label"] }, interpolateFutures(item, fwd));
+
+    const administered = /Administered|ราคาที่ทางการกำหนด/.test(item.method);
+    const mid = [], hi = [], lo = [], kind = [];
+    const lastV = last.v;
+    if (administered) {
+      fwd.forEach((ym, i) => {
+        mid.push(lastV); // hold scenario as the centre line
+        const shock = lastV * (0.06 + 0.01 * i); // widening policy/oil-lag band
+        hi.push(lastV + shock);
+        lo.push(Math.max(0, lastV - shock));
+        kind.push("ext");
+      });
+      return { fwd, mid, hi, lo, kind };
+    }
+    // trend + seasonal
+    const xs = item.d.map((v, i) => (v != null ? { i, v } : null)).filter(Boolean);
+    let drift = 0;
+    if (xs.length >= 13) {
+      const a = xs[xs.length - 13].v, b = xs[xs.length - 1].v;
+      if (a) drift = Math.pow(b / a, 1 / 12) - 1;
+    } else if (xs.length >= 2) {
+      const a = xs[0].v, b = xs[xs.length - 1].v;
+      if (a) drift = Math.pow(b / a, 1 / Math.max(1, xs[xs.length - 1].i - xs[0].i)) - 1;
+    }
+    // damp drift
+    drift = Math.max(-0.03, Math.min(0.03, drift));
+    let v = lastV;
+    fwd.forEach((ym, i) => {
+      const mo = (+ym.slice(5)) - 1;
+      const lastMo = (+MONTHS[last.i].slice(5)) - 1;
+      const seaRatio = (sea[mo] || 1) / (sea[lastMo] || 1);
+      // apply small drift and pull toward seasonal level
+      v = v * (1 + drift) * Math.pow(seaRatio, 0.15);
+      mid.push(v);
+      const band = v * Math.max(0.06, vol * Math.sqrt(i + 1) * 1.7);
+      hi.push(v + band);
+      lo.push(Math.max(0, v - band));
+      kind.push("ext");
+    });
+    return { fwd, mid, hi, lo, kind };
+  }
+
+  function drawMain(it) {
+    const el = $("mainChart");
+    const note = $("nodaily");
+    if (chart) { chart.destroy(); chart = null; }
+    if (!it || !el) return;
+
+    const isEnergy = it.group === "energy";
+    const freq = isEnergy ? energyFreq : "month";
+
+    if (freq === "day" && it.no_daily) {
+      el.parentElement.style.display = "none";
+      note.style.display = "block";
+      note.textContent = t("nodaily") + " " + L(it, "no_daily");
+      return;
+    }
+    note.style.display = "none";
+    el.parentElement.style.display = "";
+
+    let labels, hist, histLabel = t("hist");
+    const proj = project(it);
+
+    if (freq === "day" && it.daily) {
+      labels = it.daily.labels.map(dayLabel);
+      hist = it.daily.d.slice();
+      if (it.daily.sample) histLabel = t("hist") + " · " + t("sample");
+      // daily view: show last 90 days only, plus a light monthly projection note in the method box
+      const datasets = [{
+        label: histLabel, data: hist, borderColor: "#163524", backgroundColor: "transparent",
+        borderWidth: 1.6, pointRadius: 0, tension: 0.15, spanGaps: false
+      }];
+      chart = new Chart(el, chartCfg(labels, datasets, it));
+      return;
+    }
+    if (freq === "year" && it.yearly) {
+      labels = it.yearly.labels;
+      hist = it.yearly.d.slice();
+      const datasets = [{
+        label: t("hist"), data: hist, borderColor: "#163524", backgroundColor: "rgba(22,53,36,0.08)",
+        borderWidth: 2, pointRadius: 3, tension: 0.15, fill: true
+      }];
+      chart = new Chart(el, chartCfg(labels, datasets, it, true));
+      return;
+    }
+
+    // monthly + 12m forward
+    const histLabels = MONTHS.map(monthLabel);
+    const fwdLabels = proj.fwd.map(monthLabel);
+    const labelsAll = histLabels.concat(fwdLabels);
+    const histData = it.d.concat(Array(proj.fwd.length).fill(null));
+    const mid = Array(MONTHS.length).fill(null).concat(proj.mid);
+    const hi = Array(MONTHS.length).fill(null).concat(proj.hi);
+    const lo = Array(MONTHS.length).fill(null).concat(proj.lo);
+    // connect at last history point
+    const last = lastDefined(it.d);
+    if (last.i >= 0) {
+      mid[last.i] = last.v;
+      hi[last.i] = last.v;
+      lo[last.i] = last.v;
+    }
+    // split mid into fut vs ext for styling
+    const midFut = mid.map((v, i) => {
+      if (i < MONTHS.length) return i === last.i ? last.v : null;
+      return proj.kind[i - MONTHS.length] === "fut" ? v : (i === MONTHS.length && proj.kind[0] === "fut" ? v : null);
+    });
+    // ensure continuity: if first fwd is fut, already set; if first is ext, put last hist on ext series
+    const midExt = mid.map((v, i) => {
+      if (i < MONTHS.length) return i === last.i ? last.v : null;
+      return proj.kind[i - MONTHS.length] === "ext" ? v : null;
+    });
+    // if mixed, also place the last fut point onto ext start
+    for (let i = 0; i < proj.kind.length - 1; i++) {
+      if (proj.kind[i] === "fut" && proj.kind[i + 1] === "ext") {
+        midExt[MONTHS.length + i] = proj.mid[i];
+      }
+    }
+
+    const datasets = [
+      { label: t("band"), data: hi, borderColor: "transparent", backgroundColor: "rgba(36,94,122,0.16)", pointRadius: 0, fill: "+1", tension: 0.2 },
+      { label: t("band") + " lo", data: lo, borderColor: "transparent", backgroundColor: "transparent", pointRadius: 0, fill: false, tension: 0.2 },
+      { label: t("hist"), data: histData, borderColor: "#163524", backgroundColor: "transparent", borderWidth: 2, pointRadius: 0, tension: 0.15, spanGaps: false },
+      { label: t("fut"), data: midFut, borderColor: "#245e7a", backgroundColor: "transparent", borderWidth: 2, borderDash: [6, 4], pointRadius: 0, tension: 0.15, spanGaps: false },
+      { label: t("ext"), data: midExt, borderColor: "#6a6a6a", backgroundColor: "transparent", borderWidth: 2, borderDash: [2, 4], pointRadius: 0, tension: 0.15, spanGaps: false }
+    ];
+    chart = new Chart(el, chartCfg(labelsAll, datasets, it));
+  }
+
+  function chartCfg(labels, datasets, it, yearly) {
+    return {
+      type: "line",
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (c) => {
+                if (c.dataset.label && c.dataset.label.indexOf(" lo") >= 0) return null;
+                const v = c.raw;
+                if (v == null) return null;
+                return c.dataset.label + ": " + fmtNum(v) + " " + it.unit;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: yearly ? 12 : 10, font: { size: 11 }, color: "#5a635a" },
+            grid: { color: "rgba(0,0,0,0.04)" }
+          },
+          y: {
+            ticks: { font: { size: 11 }, color: "#5a635a", callback: (v) => fmtNum(v) },
+            grid: { color: "rgba(0,0,0,0.06)" },
+            title: { display: true, text: it.unit, color: "#5a635a", font: { size: 11 } }
+          }
+        }
+      }
+    };
+  }
+
+  function sourceTable(list) {
+    const rows = list.map((it) => `<tr>
+      <td>${L(it, "name")}</td>
+      <td><a href="${it.src_url}" target="_blank" rel="noopener">${it.src_name}</a></td>
+      <td>${L(it, "freq")}</td>
+      <td><span class="badge ${it.access}">${accessLabel(it.access)}</span></td>
+      <td><span class="badge ${it.feasible}">${feasLabel(it.feasible)}</span></td>
+      <td>${L(it, "notes")}</td>
+    </tr>`).join("");
+    return `<div class="tablewrap"><table>
+      <thead><tr>
+        <th>${t("src_item")}</th><th>${t("src_source")}</th><th>${t("src_freq")}</th>
+        <th>${t("src_access")}</th><th>${t("src_feas")}</th><th>${t("src_notes")}</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+  }
+
+  function uploadBox(list) {
+    const need = list.filter((x) => x.needs_upload);
+    if (!need.length && tab !== "sources" && tab !== "energy") return "";
+    const opts = (need.length ? need : ITEMS.filter((x) => x.needs_upload)).map((x) => `<option value="${x.id}">${L(x, "name")}</option>`).join("");
+    return `<div class="upload" id="uploadBox">
+      <h3 data-keep>${t("upload_h")}</h3>
+      <p class="lead" style="margin-bottom:8px">${t("upload_p")}</p>
+      <div class="row">
+        <label>${t("upload_name")}<br><input type="text" id="upName" autocomplete="name"></label>
+        <label>${t("upload_item")}<br><select id="upItem">${opts}</select></label>
+      </div>
+      <div class="drop">${t("upload_ph")}<br><input type="file" id="upFile" accept=".csv,text/csv,text/plain" style="margin-top:8px"></div>
+      <textarea id="upText" placeholder="${t("upload_ph")}"></textarea>
+      <p><button type="button" class="morebtn" id="upBtn">${t("upload_btn")}</button></p>
+      <p class="muted" id="upMsg" hidden>${t("upload_ok")}</p>
+    </div>`;
+  }
+
+  function render() {
+    if (chart) { try { chart.destroy(); } catch (e) {} chart = null; }
+    if (window.Chart) {
+      document.querySelectorAll("canvas").forEach((c) => {
+        const inst = Chart.getChart(c);
+        if (inst) inst.destroy();
+      });
+    }
+    document.title = t("title") + " — Malee";
+    const pane = $("pane");
+    if (tab === "sources") {
+      $("freqBar").hidden = true;
+      pane.innerHTML = `
+        <h2>${t("tab_sources")}</h2>
+        <p class="lead">${t("lead_sources")}</p>
+        ${sourceTable(ITEMS.filter((x) => x.group !== "fx").concat(ITEMS.filter((x) => x.group === "fx")))}
+        ${uploadBox(ITEMS)}
+        <h2>${t("methods_h")}</h2>
+        <div class="grid">
+          ${[1,2,3,4,5,6,7].map((n) => `<article class="card" style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px"><h3>${t("m"+n+"h")}</h3><p class="muted" style="margin:0">${t("m"+n+"p")}</p></article>`).join("")}
+        </div>`;
+      const btn = $("upBtn");
+      if (btn) btn.addEventListener("click", () => { $("upMsg").hidden = false; });
+      return;
+    }
+
+    const list = itemsIn(tab);
+    const defaults = { packaging: "kraft", energy: "brent", concentrate: "orange", scrap: "wp_occ" };
+    if (!selected[tab]) selected[tab] = defaults[tab] || list[0].id;
+    let it = byId(selected[tab]) || list[0];
+    selected[tab] = it.id;
+
+    $("freqBar").hidden = tab !== "energy";
+    if (tab === "energy") {
+      $("freqBar").querySelectorAll("button[data-f]").forEach((b) => b.classList.toggle("on", b.dataset.f === energyFreq));
+    }
+
+    let extra = "";
+    if (tab === "packaging") {
+      extra = `<aside class="callout carton"><h3>${t("carton_h")}</h3><p style="margin:0 0 8px">${t("carton_p")}</p></aside>`;
+    }
+
+    pane.innerHTML = `
+      <h2>${t("tab_" + tab)}</h2>
+      <p class="lead">${t("lead_" + tab)}</p>
+      ${extra}
+      <div class="detail">
+        <div class="chartbox">
+          <h3>${t("chart_h")} — ${L(it, "name")}</h3>
+          <p class="muted" id="chartSub">${it.latest && it.latest.when ? it.latest.when : ""} · ${it.unit}</p>
+          <div class="nodaily" id="nodaily" style="display:none"></div>
+          <div class="bigchart"><canvas id="mainChart"></canvas></div>
+          <div class="legend">
+            <span><i class="hist"></i>${t("hist")}</span>
+            <span><i class="fut"></i>${t("fut")}</span>
+            <span><i class="ext"></i>${t("ext")}</span>
+            <span><i class="band"></i>${t("band")}</span>
+          </div>
+        </div>
+        <div class="methodbox">
+          <h3>${t("method_h")}</h3>
+          <p>${L(it, "method")}</p>
+          <p class="muted">${L(it, "notes")}</p>
+          <p class="src">${t("source")}: <a href="${it.src_url}" target="_blank" rel="noopener">${it.src_name}</a></p>
+          <div class="caveat">${t("caveat")}</div>
+        </div>
+      </div>
+      <div class="grid" id="cards">${list.map(cardHtml).join("")}</div>
+      <h3 style="margin:0 0 8px">${t("tab_sources")}</h3>
+      ${sourceTable(list)}
+      ${uploadBox(list)}`;
+
+    list.forEach(spark);
+    drawMain(it);
+
+    pane.querySelectorAll(".cwcard").forEach((el) => {
+      const pick = () => { selected[tab] = el.dataset.id; render(); };
+      el.addEventListener("click", pick);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    });
+    const btn = $("upBtn");
+    if (btn) btn.addEventListener("click", () => { $("upMsg").hidden = false; });
+    // packaging: auto-select kraft if arriving first time? keep first item (tin) unless user clicked. OK.
+  }
+
+  // tabs
+  document.querySelectorAll(".tabbar button").forEach((b) => {
+    b.addEventListener("click", () => {
+      tab = b.dataset.tab;
+      document.querySelectorAll(".tabbar button").forEach((x) => x.classList.toggle("on", x === b));
+      applyLang();
+    });
+  });
+  document.querySelectorAll(".langsw button").forEach((b) => {
+    b.addEventListener("click", () => setLang(b.dataset.l));
+  });
+  $("freqBar").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-f]");
+    if (!b) return;
+    energyFreq = b.dataset.f;
+    applyLang();
+  });
+
+  applyLang();
+})();
+
+  </script>
+</body>
+</html>
